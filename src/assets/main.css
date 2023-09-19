@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.lvl {    
+  position: relative;
+  top: -8px;
+  margin-bottom: -17px;
+  width: 8px;
+  height: 45px;
+  background-color: #c9c9c9;
+}
