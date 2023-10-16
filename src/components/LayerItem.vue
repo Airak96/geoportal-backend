@@ -3,15 +3,12 @@
 import { ref } from 'vue';
 import { formatDate } from '../helpers/utils'
 
-import FileItem from '../components/FileItem.vue'
-
 // vue functions
 const emit = defineEmits([
   'delete',
   'edit', 
   'add',
-  'editFile',
-  'deleteFile',
+  'publish',
 ]);
 
 const show = ref(false);
@@ -39,10 +36,6 @@ function getLvl(lvl) {
   return txt+' ';
 }
 
-function toggleSub() {
-  show.value = !show.value;
-}
-
 function addItem(parent) {
   emit('add', parent);
 }
@@ -56,15 +49,9 @@ function editItem(item) {
   emit('edit', item);
 }
 
-function editFile(item) {
-  emit('editFile', item);
+function publish(item) {
+  emit('publish', item);
 }
-
-function deleteFile(n) {
-  n.files = props.item?.files;
-  emit('deleteFile', n);
-}
-
 </script>
 
 <template>
@@ -132,34 +119,12 @@ function deleteFile(n) {
             <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
           </svg>
         </button>
-        <button type="button" @click="toggleSub()">
-          <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <path fill-rule="evenodd" d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.76 9.2a.75.75 0 011.06.04l2.7 2.908 2.7-2.908a.75.75 0 111.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 01.04-1.06z" clip-rule="evenodd" />
+        <button @click="publish(item)" v-if="true || !item.published" type="button" class="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white">
+          <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 8.25H7.5a2.25 2.25 0 00-2.25 2.25v9a2.25 2.25 0 002.25 2.25h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25H15m0-3l-3-3m0 0l-3 3m3-3V15" />
           </svg>
         </button>
       </div>
     </td>
-  </tr>
-  <template v-if="show">
-    <template v-if="item.files?.length">
-      <FileItem
-        v-if="item.files?.length" 
-        v-for="file in item.files"
-        :item="file"
-        :lvl="lvl + 1" 
-        @delete="deleteFile"
-        @edit="editFile"
-      />
-    </template>
-    <template v-else>
-      <tr class="border-t-2 border-gray-200">
-        <th colspan="5" class="p-5">
-          <div class="relative block w-full rounded-lg border-2 border-dashed border-gray-300 p-4 text-center">
-            <span class="block text-sm font-semibold italic text-gray-500">Añade un archivo para verlo aquí.</span>
-          </div>
-        </th>
-      </tr>
-    </template>
-  </template>
-  
+  </tr>  
 </template>

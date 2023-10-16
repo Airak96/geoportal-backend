@@ -22,7 +22,16 @@ const status = ref(true);     // checkbox de estado == false: Inactivo | true: A
 const schema = Yup.object().shape({
   external: Yup.string(),
   name: Yup.string().required("El nombre es requerido"),
+  type: Yup.string().default('shape').required('El tipo es requerido'),
+  file: Yup.mixed(),
+  styles: Yup.mixed(),
   description: Yup.string(),
+  legends: Yup.array().of(
+    Yup.object().shape({
+      color: Yup.string().required("El color es requerido"),
+      description: Yup.string().required("La descripción es requerida"),
+    }),
+  ),
 });
 
 const openModal = (item, type, parent) => {
@@ -32,10 +41,18 @@ const openModal = (item, type, parent) => {
   
   if(item) {
     form.value.setFieldValue('name', item.name);
+    form.value.setFieldValue('type', item.type);
     form.value.setFieldValue('description', item.description || '');
     form.value.setFieldValue('external', item.external_id);
+
+    if(item.type === 'raster') {
+      form.value.setFieldValue('external', item.legends || []);
+    }
+
     status.value = item.status;
   } else {
+    form.value.setFieldValue('type', 'shapes');
+    form.value.setFieldValue('legends', []);
     status.value = true;
   }
 
@@ -54,24 +71,56 @@ const closeModal = (reset) => {
   }, 250);
 };
 
-const refreshValues = (data) => {
+const refreshValues = (data, res) => {
   object.value.name = data.name;
+  object.value.type = data.type;
+  object.value.legends = data.legends;
   object.value.description = data.description;
   object.value.status = status.value;
   object.value.updated_at = data.updated_at;
+  if(res) {
+    object.value.filename = res.filename;
+    object.value.filepath = res.filepath;
+    object.value.folderpath = res.folderpath;
+  }
+}
+
+function download(path, name) {
+  let layersStore = useLayersStore();
+  layersStore.download(path)
+    .then(res => {
+      let file_name = name+"."+path.split(".")[1];
+      file_name = file_name.replace(/ /g, '_');
+
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', file_name);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      console.log('Archivo descargado!');
+    })
+    .catch(error => console.log(error));
 }
 
 function onSubmit(values, { setErrors, resetForm }) {
   const layersStore = useLayersStore();
   const { 
     external,
-    name, 
-    description
+    name,
+    type,
+    file,
+    styles,
+    description,
+    legends
   } = values;
 
   let body = {
     name: name,
+    type: type,
     status: status.value,
+    legends: legends,
     updated_at: new Date(),
   }
 
@@ -90,7 +139,7 @@ function onSubmit(values, { setErrors, resetForm }) {
       })
       .catch(error => console.log(error));
   } else {
-    return layersStore.add(body)
+    return layersStore.add(body, file, styles)
       .then(res => {
         resetForm();
         closeModal();
@@ -143,31 +192,8 @@ defineExpose({
           }"
           class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6"
         >
-          <div class="absolute right-0 top-0 hidden pr-4 pt-4 sm:block">
-            <!-- <button
-              @click="closeModal(null)"
-              type="button"
-              class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-            >
-              <span class="sr-only">Close</span>
-              <svg
-                class="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button> -->
-          </div>
           <div>
-            <Form @submit="onSubmit" :validation-schema="schema" v-slot="{ errors, isSubmitting, handleReset }" ref="form" method="POST">
+            <Form @submit="onSubmit" :validation-schema="schema" v-slot="{ errors, isSubmitting, handleReset, values }" ref="form" method="POST">
               <div class="space-y-12">
                 <div class="border-b border-gray-900/10 pb-12">
                   <h2 class="text-lg font-semibold leading-5 text-gray-900">
@@ -176,6 +202,7 @@ defineExpose({
                   <p class="text-sm leading-6 text-gray-600">
                     {{ edit ? 'Edita':'Ingresa' }} la información relacionada a la capa.
                   </p>
+                  <!-- <p>{{ errors }}</p> -->
                   <fieldset :disabled="isSubmitting">
                     <Field 
                       type="hidden"
@@ -212,6 +239,96 @@ defineExpose({
 
                       <div class="col-span-full">
                         <label
+                          for="layer_type"
+                          class="block text-sm font-medium leading-6 text-gray-900"
+                          >Tipo</label
+                        >
+                        <div class="mt-2">
+                          <div
+                            class="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600"
+                          >
+                            <Field
+                              as="select"
+                              name="type"
+                              id="layer_type"
+                              class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                              autocomplete="off"
+                            >
+                              <option value="shapes" selected>Geometrías (zip)</option>
+                              <option value="raster">Ráster (tif)</option>
+                            </Field>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-span-full" v-if="!object">
+                        <label
+                          for="layer_file"
+                          class="block text-sm font-medium leading-6 text-gray-900"
+                          >Archivo {{ values.type === 'raster' ? 'Ráster' : 'de Geometrías' }}</label
+                        >
+                        <Field
+                          type="file"
+                          name="file"
+                          id="layer_file"
+                          class="block w-full rounded-md border-0 px-1.5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                          :accept="values.type === 'raster' ? '.tif' : '.zip'"
+                        />
+                      </div>
+
+                      <div class="col-span-full" v-if="object?.filepath">
+                        <ul role="list" class="divide-y divide-gray-100 rounded-md border border-gray-200 mt-2">
+                          <li class="flex items-center justify-between py-4 pl-4 pr-5 text-sm leading-6">
+                            <div class="flex w-0 flex-1 items-center">
+                              <svg class="h-5 w-5 flex-shrink-0 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M15.621 4.379a3 3 0 00-4.242 0l-7 7a3 3 0 004.241 4.243h.001l.497-.5a.75.75 0 011.064 1.057l-.498.501-.002.002a4.5 4.5 0 01-6.364-6.364l7-7a4.5 4.5 0 016.368 6.36l-3.455 3.553A2.625 2.625 0 119.52 9.52l3.45-3.451a.75.75 0 111.061 1.06l-3.45 3.451a1.125 1.125 0 001.587 1.595l3.454-3.553a3 3 0 000-4.242z" clip-rule="evenodd" />
+                              </svg>
+                              <div class="ml-4 flex min-w-0 flex-1 gap-2">
+                                <span class="truncate font-medium">{{ object.filepath }}</span>
+                              </div>
+                            </div>
+                            <div class="ml-4 flex-shrink-0">
+                              <button type="button" @click="download(object.filepath, object.name)" class="font-medium text-indigo-600 hover:text-indigo-500">Descargar</button>
+                            </div>
+                          </li>
+                        </ul>
+                      </div>
+
+                      <div class="col-span-full" v-if="!object && values.type !== 'raster'">
+                        <label
+                          for="layer_styles"
+                          class="block text-sm font-medium leading-6 text-gray-900"
+                          >Archivo de estilos</label
+                        >
+                        <Field
+                          type="file"
+                          name="styles"
+                          id="layer_styles"
+                          class="block w-full rounded-md border-0 px-1.5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                          accept=".sld"
+                        />
+                      </div>
+
+                      <div class="col-span-full" v-if="object?.styles">
+                        <ul role="list" class="divide-y divide-gray-100 rounded-md border border-gray-200 mt-2">
+                          <li class="flex items-center justify-between py-4 pl-4 pr-5 text-sm leading-6">
+                            <div class="flex w-0 flex-1 items-center">
+                              <svg class="h-5 w-5 flex-shrink-0 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M15.621 4.379a3 3 0 00-4.242 0l-7 7a3 3 0 004.241 4.243h.001l.497-.5a.75.75 0 011.064 1.057l-.498.501-.002.002a4.5 4.5 0 01-6.364-6.364l7-7a4.5 4.5 0 016.368 6.36l-3.455 3.553A2.625 2.625 0 119.52 9.52l3.45-3.451a.75.75 0 111.061 1.06l-3.45 3.451a1.125 1.125 0 001.587 1.595l3.454-3.553a3 3 0 000-4.242z" clip-rule="evenodd" />
+                              </svg>
+                              <div class="ml-4 flex min-w-0 flex-1 gap-2">
+                                <span class="truncate font-medium">{{ object.styles }}</span>
+                              </div>
+                            </div>
+                            <div class="ml-4 flex-shrink-0">
+                              <button type="button" @click="download(object.styles, object.name)" class="font-medium text-indigo-600 hover:text-indigo-500">Descargar</button>
+                            </div>
+                          </li>
+                        </ul>
+                      </div>
+
+                      <!-- <div class="col-span-full">
+                        <label
                           for="layer_description"
                           class="block text-sm font-medium leading-6 text-gray-900"
                           >Descripción</label
@@ -225,7 +342,7 @@ defineExpose({
                             class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                           />
                         </div>
-                      </div>
+                      </div> -->
 
                       <div v-if="edit" class="sm:col-span-3">
                         <div class="relative flex items-start">

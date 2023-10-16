@@ -6,7 +6,6 @@
   // component imports
   import ListItem from '../../components/ListItem.vue'
   import CategoryModal from '../../components/CategoryModal.vue';
-  import FileModal from '../../components/FileModal.vue'
   import DeleteModal from '../../components/DeleteModal.vue';
 
   import LayerModal from '../../components/LayerModal.vue';
@@ -14,13 +13,12 @@
   // store imports
   import { useCategoriesStore } from '../../stores/categories.store';
   import { useLayersStore } from '../../stores/layers.store';
-  import { useFilesStore } from '../../stores/files.store';
+  import { useGeoserverStore } from '../../stores/geoserver.store';
 
   // logic
   const childComponentRef = ref(null);
   const deleteModalRef = ref(null);
-  const layerModalRef = ref(null);
-  // const fileModalRef = ref(null);
+  // const layerModalRef = ref(null);
 
   const dynamicContainer = ref(null);
   let dynamicModal = null;
@@ -83,40 +81,6 @@
           console.log(err);
         });
     }
-
-    if(type === 'file') {
-      const filesStore = useFilesStore();
-      const fil = n.external_id;
-      filesStore.remove(fil)
-        .then(res => {
-          let arr = n.files;
-          if(arr) {
-            let index = arr.findIndex(i => i.external_id === n.external_id);
-            if(index > -1) {
-              arr.splice(index, 1);
-            } 
-          }
-          deleteModalRef.value?.closeModal()
-        }).catch(err => {
-          console.log(err);
-        });
-    }
-  }
-
-  function editCategory(n) {
-    childComponentRef.value?.openModal(n, 'edit', null)
-  }
-
-  function addLayer(parent) {
-    layerModalRef.value?.openModal(null, 'add', parent)
-  }
-
-  function editLayer(n) {
-    layerModalRef.value?.openModal(n, 'edit', null)
-  }
-
-  function openDeleteLayer(n) {
-    deleteModalRef.value?.openModal(n,'layer');
   }
 
   function renderModal() {
@@ -124,24 +88,46 @@
       dynamicModal.unmount();
     }
 
-    dynamicModal = createApp(FileModal);
+    dynamicModal = createApp(LayerModal);
     dynamicModalInstance = dynamicModal.mount(dynamicContainer.value);
   }
 
-  function addFile(parent) {
+  function editCategory(n) {
+    childComponentRef.value?.openModal(n, 'edit', null)
+  }
+
+  function addLayer(parent) {
     renderModal()
-    // fileModalRef.value?.openModal(null, 'add', parent);
+    // layerModalRef.value?.openModal(null, 'add', parent)
     dynamicModalInstance?.openModal(null, 'add', parent);
   }
 
-  function editFile(n) {    
+  function editLayer(n) {
     renderModal()
-    // fileModalRef.value?.openModal(n, 'edit', null);
+    // layerModalRef.value?.openModal(n, 'edit', null)
     dynamicModalInstance?.openModal(n, 'edit', null);
   }
 
-  function openDeleteFile(n) {
-    deleteModalRef.value?.openModal(n,'file');
+  function openDeleteLayer(n) {
+    deleteModalRef.value?.openModal(n,'layer');
+  }
+
+  function publish(item) {
+    const geoserverStore = useGeoserverStore();
+    var store = null;
+    if(item.type === 'raster') {
+      store = geoserverStore.publishRaster(item.id_layer);
+    } else {
+      store = geoserverStore.publishShapes(item.id_layer);
+    }
+
+    store
+        .then(res => {
+          console.log('Shape publicado!', res);
+          item.published = true;
+        }).catch(err => {
+          console.log(err);
+        });
   }
 </script>
 
@@ -192,9 +178,7 @@
                   @addLayer="addLayer"
                   @editLayer="editLayer"
                   @deleteLayer="openDeleteLayer"
-                  @addFile="addFile"
-                  @editFile="editFile"
-                  @deleteFile="openDeleteFile"
+                  @publish="publish"
                 />
                 <template v-if="!categories?.loading && categories.length == 0">
                   <th colspan="5" class="p-5">
@@ -205,23 +189,6 @@
                 </template>
               </tbody>
             </table>
-            <!-- <nav class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6" aria-label="Pagination">
-              <div class="hidden sm:block">
-                <p class="text-sm text-gray-700">
-                  Mostrando
-                  <span class="font-medium">1</span>
-                  a
-                  <span class="font-medium">10</span>
-                  de
-                  <span class="font-medium">20</span>
-                  resultados
-                </p>
-              </div>
-              <div class="flex flex-1 justify-between sm:justify-end">
-                <a href="#" class="relative inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:outline-offset-0">Anterior</a>
-                <a href="#" class="relative ml-3 inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:outline-offset-0">Siguiente</a>
-              </div>
-            </nav> -->
           </div>
         </div>
       </div>
@@ -234,11 +201,8 @@
       ref="deleteModalRef" 
       @confirmed="deleteRecord" 
     />
-    <LayerModal 
+    <!-- <LayerModal 
       ref="layerModalRef"
-    />
-    <!-- <FileModal
-      ref="fileModalRef"
     /> -->
     <div ref="dynamicContainer"></div>
   </div>

@@ -59,8 +59,8 @@
     <div class="px-4 pb-2 pt-2" id="filter-section-0">
       <div class="space-y-3">
         <template v-for="option in item.layers">
-          <div class="flex items-center" v-if="option.status && option?.files?.length">
-            <input @change="toggleLegend(option.files)" id="color-0-mobile" :name="option.ref" v-model="option.show" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+          <div class="flex items-center" v-if="option.status && option.published">
+            <input id="color-0-mobile" :name="option.ref" v-model="option.show" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
             <label for="color-0-mobile" class="ml-3 text-sm text-gray-500">{{ option.name }}</label>
           </div>
         </template>

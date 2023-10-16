@@ -15,8 +15,19 @@ export const useLayersStore = defineStore({
         .then(layers => this.layers = layers)
         .catch(error => this.layers = { error })
     },
-    add(data) {
-      return fetchWrapper.post(`${baseUrl}/`, data)
+    add(data, file, styles) {
+      const formData = new FormData();
+      formData.append('file', file);
+      if(styles && data.type === 'shapes') {
+        formData.append('styles', styles);
+      }
+      formData.append('fileProps', JSON.stringify(data));
+      
+      if(data.type === 'raster') {        
+        return fetchWrapper.post(`${baseUrl}/raster`, formData);
+      } else {        
+        return fetchWrapper.post(`${baseUrl}/shapes`, formData);
+      }
     },
     get(id) {
       return fetchWrapper.get(`${baseUrl}/get/${id}`)
@@ -26,6 +37,9 @@ export const useLayersStore = defineStore({
     },
     remove(id) {
       return fetchWrapper.delete(`${baseUrl}/${id}`)
-    }
+    },
+    download(path) {
+      return fetchWrapper.files(`${baseUrl}/download/${path}`)
+    },
   }
 });

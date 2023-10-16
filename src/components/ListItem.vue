@@ -18,9 +18,7 @@ const emit = defineEmits(
     'addLayer', 
     'editLayer', 
     'deleteLayer',
-    'addFile',
-    'editFile',
-    'deleteFile',
+    'publish',
   ]
 );
 
@@ -108,16 +106,8 @@ function deleteLayer(n) {
   emit('deleteLayer', n);
 }
 
-function addFile(parent) {
-  emit('addFile', parent);
-}
-
-function editFile(item) {
-  emit('editFile', item);
-}
-
-function deleteFile(n) {
-  emit('deleteFile', n);
+function publish(item) {
+  emit('publish', item);
 }
 </script>
 <template>
@@ -203,12 +193,10 @@ function deleteFile(n) {
         v-if="item.layers?.length" 
         v-for="layer in item.layers"      
         :item="layer"
-        :lvl="lvl + 1" 
-        @add="addFile"
+        :lvl="lvl + 1"
         @edit="editLayer"
         @delete="deleteLayer"
-        @editFile="editFile"
-        @deleteFile="deleteFile"
+        @publish="publish"
       />
       
       <ListItem 
@@ -222,9 +210,7 @@ function deleteFile(n) {
         @addLayer="addLayer"
         @editLayer="editLayer"
         @deleteLayer="deleteLayer"
-        @addFile="addFile"
-        @editFile="editFile"
-        @deleteFile="deleteFile"
+        @publish="publish"
       />
     </template>
     

@@ -46,19 +46,43 @@
 
   const clicked = (event) => {
     // console.log(event);
-    map.value.forEachFeatureAtPixel([event.x, event.y], function(feature, layer) {
-      if(feature && feature.values_){
-        console.log(feature.values_)
-        childComponentRef.value?.openModal(feature.values_)
-      }
-    });
-  };
-
-  const urlFunction = (extent, resolution, projection) => {
-    const url =
-      "http://localhost:8080/geoserver/Ecuador/wfs?service=WFS&" +
-      "version=1.1.0&request=GetFeature&typename=shp2";
-    return url;
+    // map.value.forEachFeatureAtPixel([event.x, event.y], function(feature, layer) {
+      // if(feature && feature.values_){
+        // console.log(feature.values_)
+        // childComponentRef.value?.openModal(feature.values_)
+      // }
+    // });
+    if(event.pixel) {
+      const map = event.map;
+      const view = map.getView();
+      const resolution = view.getResolution();
+      map.getLayers().forEach((layer, i, layers) => {
+        if(layer.getVisible()) {
+          if(layer.getSource().getFeatureInfoUrl) {
+            let url = layer.getSource().getFeatureInfoUrl(event.coordinate, resolution, 'EPSG:3857', {
+              'INFO_FORMAT': 'application/json',
+              'FEATURE_COUNT': '300',
+            })
+            console.log("URL =>",url);
+            if(url) {
+              fetch(url)
+                .then(res => {
+                  return res.json();
+                })
+                .then(data => {
+                  console.log("DATOS =>", data.features[0]?.properties);
+                  if(data && data.features?.length) {
+                    childComponentRef.value?.openModal(data.features[0]?.properties)
+                  }
+                })
+                .catch(err => {
+                  console.error('Fetch error:', err);
+                });
+            }
+          }
+        }
+      });
+    }
   };
 </script>
 <template>
@@ -145,14 +169,22 @@
 
 
           <!-- PRUEBA DE CAPAS GEOSERVER -->
-          <ol-tile-layer :zIndex="1">
+          <!-- <ol-tile-layer :zIndex="1">
             <ol-source-tile-wms
               url="http://localhost:8080/geoserver/wms"
               layers="Ecuador:shp2"
               serverType="geoserver"
               :transition="0"
             />
-          </ol-tile-layer>
+          </ol-tile-layer> -->
+
+          <!-- <ol-image-layer :zIndex="1">
+            <ol-source-image-wms
+              url="http://localhost:8080/geoserver/wms"
+              layers="Ecuador:test_shape2"
+              serverType="geoserver"
+            />
+          </ol-image-layer> -->
 
           <!-- <ol-tile-layer :zIndex="1">
             <ol-source-tile-wms
