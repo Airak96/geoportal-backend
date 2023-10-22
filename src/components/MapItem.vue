@@ -1,6 +1,6 @@
 <script setup>
-  import MapItem from "./MapItem.vue"
-  import { ref, inject } from 'vue'
+  import { ref } from "vue";
+import MapItem from "./MapItem.vue"
   const props = defineProps({
     item: {
       type: Object,
@@ -11,22 +11,13 @@
     }
   });
 
-  const format = inject("ol-format");
-  const geoJson = new format.GeoJSON();
-
-  const projection = ref("EPSG:3857");
-
-  function getURL(path) {
-    let url = `${import.meta.env.VITE_FILES_URL}/${path}`
-    console.log(url)
-    return url;
-  }
+  const url = ref(import.meta.env.VITE_GEOSERVER);
 </script>
 <template>
   <template v-for="layer in item.layers">
     <ol-image-layer :zIndex="1" v-if="layer.show">
       <ol-source-image-wms
-        url="http://localhost:8080/geoserver/wms"
+        :url="url"
         :layers="'Ecuador:'+layer.external_id"
         serverType="geoserver"
       />

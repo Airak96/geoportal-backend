@@ -2,7 +2,8 @@
   // vue imports
   import { ref } from 'vue';
 
-  import { useCategoriesStore } from '../stores/categories.store'
+  import { useCategoriesStore } from '../stores/categories.store';
+  import { useGeoserverStore } from '../stores/geoserver.store';
   import MenuItem from "./MenuItem.vue";
 
   const props = defineProps({
@@ -20,6 +21,7 @@
   });
   const loaded = ref(false);
   const categoriesStore = useCategoriesStore();
+  const geoserverStore = useGeoserverStore();
 
   function loadData() {
     categoriesStore.get(props.item?.external_id)
@@ -36,13 +38,25 @@
       });
   }
 
-  function toggleLegend(n) {
-    for(let item of n) {
-      let idx = props.legends.findIndex(x => x.external_id === item.external_id);
-      if(idx > -1) {
-        props.legends.splice(idx, 1);
-      } else {
-        props.legends.push(item);
+  function toggleLegend(layer, show) {
+    if(show) {
+      if(layer.type === 'shapes') {
+        geoserverStore.legends(layer.external_id)
+          .then(res => {
+            let geoLegend = res.data?.Legend;
+            if(geoLegend && geoLegend?.length) {
+              let obj = geoLegend[0];
+              obj.localName = layer.name;
+              props.legends.push(obj);
+            }
+          }).catch(err => {
+            console.log(err);
+          });
+      }
+    } else {
+      let index = props.legends.findIndex(x => x.layerName === layer.external_id)
+      if(index > -1) {
+        props.legends.splice(index, 1);
       }
     }
   }
@@ -60,7 +74,7 @@
       <div class="space-y-3">
         <template v-for="option in item.layers">
           <div class="flex items-center" v-if="option.status && option.published">
-            <input id="color-0-mobile" :name="option.ref" v-model="option.show" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+            <input id="color-0-mobile" :name="option.ref" v-model="option.show" @change="toggleLegend(option, option.show)" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
             <label for="color-0-mobile" class="ml-3 text-sm text-gray-500">{{ option.name }}</label>
           </div>
         </template>

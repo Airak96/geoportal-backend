@@ -49,20 +49,6 @@ const router = createRouter({
       children: [
         {
           path: '',
-          component: MainView,
-        },
-        {
-          path: 'capas',
-          component: LayersListView,
-          meta: { transition: 'slide-left' },
-        },
-        {
-          path: 'capas/editar',
-          component: LayersEditView,
-          meta: { transition: 'slide-left' },
-        },
-        {
-          path: 'categorias',
           component: CategoryListView
         },
       ],

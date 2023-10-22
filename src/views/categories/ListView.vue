@@ -9,15 +9,16 @@
   import DeleteModal from '../../components/DeleteModal.vue';
 
   import LayerModal from '../../components/LayerModal.vue';
+  import PublishModal from '../../components/PublishModal.vue';
 
   // store imports
   import { useCategoriesStore } from '../../stores/categories.store';
   import { useLayersStore } from '../../stores/layers.store';
-  import { useGeoserverStore } from '../../stores/geoserver.store';
 
   // logic
   const childComponentRef = ref(null);
   const deleteModalRef = ref(null);
+  const publishModalRef = ref(null);
   // const layerModalRef = ref(null);
 
   const dynamicContainer = ref(null);
@@ -113,21 +114,7 @@
   }
 
   function publish(item) {
-    const geoserverStore = useGeoserverStore();
-    var store = null;
-    if(item.type === 'raster') {
-      store = geoserverStore.publishRaster(item.id_layer);
-    } else {
-      store = geoserverStore.publishShapes(item.id_layer);
-    }
-
-    store
-        .then(res => {
-          console.log('Shape publicado!', res);
-          item.published = true;
-        }).catch(err => {
-          console.log(err);
-        });
+    publishModalRef.value?.openModal(item);
   }
 </script>
 
@@ -136,7 +123,7 @@
     <div class="flow-root">
       <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
         <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-          <div class="mb-6 flex items-center justify-start gap-x-6">
+          <div class="mb-6 flex items-center justify-start gap-x-5">
             <button type="button" @click="addCategory(null)"
               class="relative inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
               <svg class="-ml-0.5 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -144,6 +131,9 @@
               </svg>
               Agregar categoría
             </button>
+            <RouterLink to="/" class="relative inline-flex items-center gap-x-1.5 rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
+              Ir al mapa
+            </RouterLink>
           </div>
           <div class="shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
             <table class="min-w-full divide-y divide-gray-300">
@@ -200,6 +190,9 @@
     <DeleteModal 
       ref="deleteModalRef" 
       @confirmed="deleteRecord" 
+    />
+    <PublishModal 
+      ref="publishModalRef"
     />
     <!-- <LayerModal 
       ref="layerModalRef"

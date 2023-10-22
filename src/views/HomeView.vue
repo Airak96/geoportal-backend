@@ -3,7 +3,7 @@
   import MapItem from '../components/MapItem.vue'
   import InfoModal from '../components/InfoModal.vue';
   import { transform } from 'ol/proj'
-  import { ref, inject } from 'vue';
+  import { ref } from 'vue';
 
   // store imports
   import { useCategoriesStore } from '../stores/categories.store'
@@ -34,62 +34,62 @@
   const zoom = ref(9);
   const rotation = ref(0);
 
-  const format = inject("ol-format");
-  const GeoJSON = new format.WFS();
-
-  //                 oeste           sur           este          norte
-  // const extent = ref([-8859051.0774, -670624.0975, -8642349.8685,-473395.3977]);
-
   // sistema de referencia coordenadas
   const projectionName = "EPSG:32717";
   const projectionDef = "+proj=utm +zone=17 +south +datum=WGS84 +units=m +no_defs +type=crs";
 
   const clicked = (event) => {
-    // console.log(event);
-    // map.value.forEachFeatureAtPixel([event.x, event.y], function(feature, layer) {
-      // if(feature && feature.values_){
-        // console.log(feature.values_)
-        // childComponentRef.value?.openModal(feature.values_)
-      // }
-    // });
     if(event.pixel) {
       const map = event.map;
       const view = map.getView();
       const resolution = view.getResolution();
-      map.getLayers().forEach((layer, i, layers) => {
-        if(layer.getVisible()) {
-          if(layer.getSource().getFeatureInfoUrl) {
-            let url = layer.getSource().getFeatureInfoUrl(event.coordinate, resolution, 'EPSG:3857', {
-              'INFO_FORMAT': 'application/json',
-              'FEATURE_COUNT': '300',
-            })
-            console.log("URL =>",url);
-            if(url) {
-              fetch(url)
-                .then(res => {
-                  return res.json();
-                })
-                .then(data => {
-                  console.log("DATOS =>", data.features[0]?.properties);
-                  if(data && data.features?.length) {
-                    childComponentRef.value?.openModal(data.features[0]?.properties)
-                  }
-                })
-                .catch(err => {
-                  console.error('Fetch error:', err);
-                });
-            }
-          }
-        }
-      });
+
+      var layers = map.getLayers()['array_'];
+      var pos = layers.length - 1;
+      if(layers.length > 0) {
+        findProperties(layers, pos, event, resolution);
+      }
     }
   };
+  
+  const findProperties = (layers, pos, event, resolution) => {
+    if(pos > -1) {
+      let layer = layers[pos];
+      if(layer.getVisible()) {
+        if(layer.getSource().getFeatureInfoUrl) {
+          let url = layer.getSource().getFeatureInfoUrl(event.coordinate, resolution, 'EPSG:3857', {
+            'INFO_FORMAT': 'application/json',
+            'FEATURE_COUNT': '300',
+          })
+          if(url) {
+            fetch(url)
+              .then(res => {
+                return res.json();
+              })
+              .then(data => {
+                console.log("DATOS =>", data.features[0]?.properties);
+                if(data && data.features?.length) {
+                  childComponentRef.value?.openModal(data.features[0]?.properties)
+                } else {
+                  findProperties(layers, pos - 1, event, resolution);
+                }
+              })
+              .catch(err => {
+                console.error('Fetch error:', err);
+              });
+          }
+        }
+      }
+    }
+  }
+
+
 </script>
 <template>
   <div class="grid grid-cols-5 gap-3 h-full">
     <div class="col-span-5 relative h-full">      
       <!-- filtro del mapa -->
-      <div class="absolute top-10 right-10 z-10">
+      <div class="absolute top-10 right-10 z-10 w-[320px]">
         <div class="bg-white rounded-lg px-5 py-5 shadow-md mb-5">
           <form>
             <fieldset>
@@ -117,10 +117,13 @@
           </legend>
           <template v-if="selected?.length && selected.length > 0">
             <template v-for="obj in selected">
-              <div class="flex items-center gap-3 pl-4 mt-3" v-for="legend in obj.legends">
-                <div class="w-[20px] h-4" :style="{ backgroundColor: legend.color }"></div>
-                <div class="text-sm text-gray-500">{{ legend.description }}</div>
-              </div>              
+              <p class="ml-4 mt-4 font-bold text-xs uppercase">{{ obj.localName }}</p>
+              <template v-for="legend in obj.rules">
+                <div v-if="legend.ElseFilter !== 'true'" class="flex items-center gap-3 pl-4 mt-2">
+                  <div class="w-[20px] h-4" :style="{ backgroundColor: legend.symbolizers[0].Polygon.fill }"></div>
+                  <div class="text-xs text-gray-500">{{ legend.name }}</div>
+                </div>
+              </template>              
             </template>             
           </template>
 
@@ -166,42 +169,6 @@
           <ol-webgl-tile-layer :zIndex="1">
             <ol-source-osm />
           </ol-webgl-tile-layer>
-
-
-          <!-- PRUEBA DE CAPAS GEOSERVER -->
-          <!-- <ol-tile-layer :zIndex="1">
-            <ol-source-tile-wms
-              url="http://localhost:8080/geoserver/wms"
-              layers="Ecuador:shp2"
-              serverType="geoserver"
-              :transition="0"
-            />
-          </ol-tile-layer> -->
-
-          <!-- <ol-image-layer :zIndex="1">
-            <ol-source-image-wms
-              url="http://localhost:8080/geoserver/wms"
-              layers="Ecuador:test_shape2"
-              serverType="geoserver"
-            />
-          </ol-image-layer> -->
-
-          <!-- <ol-tile-layer :zIndex="1">
-            <ol-source-tile-wms
-              url="http://localhost:8080/geoserver/wms"
-              layers="Ecuador:peru_distritos"
-              serverType="geoserver"
-              :transition="0"
-            />
-          </ol-tile-layer> -->
-
-          <!-- <ol-vector-layer>
-            <ol-source-vector
-              :url="urlFunction"
-              :format="GeoJSON"
-              :projection="projection"
-            />
-          </ol-vector-layer> -->
 
           <!-- zoom del mapa -->
           <ol-zoom-control />

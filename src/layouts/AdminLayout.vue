@@ -59,14 +59,11 @@
               </button>
             </div>
             <div class="flex flex-shrink-0 items-center">
-              <img class="block h-8 w-auto lg:hidden"
-                src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600" alt="Your Company">
-              <img class="hidden h-8 w-auto lg:block"
-                src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600" alt="Your Company">
+              <span class="font-bold text-slate-500 uppercase text-sm">Panel de Administración</span>
             </div>
             <div class="hidden md:ml-6 md:flex md:space-x-8">
               <!-- Current: "border-indigo-500 text-gray-900", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" -->
-              <RouterLink to="/admin/categorias" class="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">Categorías</RouterLink>
+              <!-- <RouterLink to="/admin/categorias" class="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">Categorías</RouterLink> -->
               <!-- <RouterLink to="/admin/capas" class="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">Capas</RouterLink> -->
               <!-- <a href="#"
                 class="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">Usuarios</a> -->
@@ -81,9 +78,12 @@
                     id="user-menu-button" aria-expanded="false" aria-haspopup="true"
                     v-on="showDropdown ? { click: closeDropdown }:{ click: openDropdown }">
                     <span class="sr-only">Open user menu</span>
-                    <img class="h-8 w-8 rounded-full"
+                    <!-- <img class="h-8 w-8 rounded-full"
                       src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                      alt="">
+                      alt=""> -->
+                    <svg class="h-8 w-8 rounded-full text-gray-300 border-gray-300 border" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>  
                   </button>
                 </div>
                 <div
@@ -105,10 +105,10 @@
       <div class="md:hidden" id="mobile-menu" :class="{ 'hidden': !openMenu }">
         <div class="space-y-1 pb-3 pt-2">
           <!-- Current: "bg-indigo-50 border-indigo-500 text-indigo-700", Default: "border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700" -->
-          <a href="#"
-            class="block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium text-gray-500 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700 sm:pl-5 sm:pr-6">Capas</a>
-          <a href="#"
-            class="block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium text-gray-500 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700 sm:pl-5 sm:pr-6">Categorías</a>
+          <!-- <a href="#"
+            class="block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium text-gray-500 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700 sm:pl-5 sm:pr-6">Capas</a> -->
+          <!-- <a href="#"
+            class="block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium text-gray-500 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700 sm:pl-5 sm:pr-6">Categorías</a> -->
           <!-- <a href="#"
             class="block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium text-gray-500 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700 sm:pl-5 sm:pr-6">Usuarios</a> -->
         </div>
