@@ -118,12 +118,22 @@
           <template v-if="selected?.length && selected.length > 0">
             <template v-for="obj in selected">
               <p class="ml-4 mt-4 font-bold text-xs uppercase">{{ obj.localName }}</p>
-              <template v-for="legend in obj.rules">
-                <div v-if="legend.ElseFilter !== 'true'" class="flex items-center gap-3 pl-4 mt-2">
-                  <div class="w-[20px] h-4" :style="{ backgroundColor: legend.symbolizers[0].Polygon.fill }"></div>
-                  <div class="text-xs text-gray-500">{{ legend.name }}</div>
-                </div>
-              </template>              
+              <template v-if="obj.localType === 'shapes'">
+                <template v-for="legend in obj.rules">
+                  <div v-if="legend.ElseFilter !== 'true'" class="flex items-center gap-3 pl-4 mt-2">
+                    <div class="w-[20px] h-4" :style="{ backgroundColor: legend.symbolizers[0].Polygon.fill }"></div>
+                    <div class="text-xs text-gray-500">{{ legend.name }}</div>
+                  </div>
+                </template>
+              </template>
+              <template v-else-if="obj.localType === 'raster'">
+                <template v-for="legend in obj.rules">
+                  <div class="flex items-center gap-3 pl-4 mt-2">
+                    <div class="w-[20px] h-4" :style="{ backgroundColor: legend.color }"></div>
+                    <div class="text-xs text-gray-500">{{ legend.description?.toUpperCase() }}</div>
+                  </div>
+                </template>
+              </template>      
             </template>             
           </template>
 

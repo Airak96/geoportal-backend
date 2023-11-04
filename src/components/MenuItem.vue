@@ -47,11 +47,22 @@
             if(geoLegend && geoLegend?.length) {
               let obj = geoLegend[0];
               obj.localName = layer.name;
+              obj.localType = layer.type;
               props.legends.push(obj);
             }
           }).catch(err => {
             console.log(err);
           });
+      } else {
+        if(layer.legends?.length) {
+          let obj = {
+            rules: layer.legends,
+            localName: layer.name,
+            localType: layer.type,
+          }
+
+          props.legends.push(obj);
+        }
       }
     } else {
       let index = props.legends.findIndex(x => x.layerName === layer.external_id)

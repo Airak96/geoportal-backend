@@ -1,12 +1,12 @@
 <script setup>
 // vue imports
-import { ref } from "vue";
+import { reactive, ref, toRefs } from "vue";
 
 // store imports
 import { useLayersStore } from '../stores/layers.store'
 
 // form imports
-import { Form, Field } from "vee-validate";
+import { Form, Field, FieldArray } from "vee-validate";
 import * as Yup from "yup";
 
 // logic
@@ -18,6 +18,10 @@ const object = ref(null);     // objeto a editar
 const form = ref(null);       // referencia del formulario
 
 const status = ref(true);     // checkbox de estado == false: Inactivo | true: Activo
+const state = reactive({
+  legends: [],
+});
+const { legends } = toRefs(state);
 
 const schema = Yup.object().shape({
   external: Yup.string(),
@@ -26,12 +30,6 @@ const schema = Yup.object().shape({
   file: Yup.mixed(),
   styles: Yup.mixed(),
   description: Yup.string(),
-  legends: Yup.array().of(
-    Yup.object().shape({
-      color: Yup.string().required("El color es requerido"),
-      description: Yup.string().required("La descripción es requerida"),
-    }),
-  ),
 });
 
 const openModal = (item, type, parent) => {
@@ -46,13 +44,19 @@ const openModal = (item, type, parent) => {
     form.value.setFieldValue('external', item.external_id);
 
     if(item.type === 'raster') {
-      form.value.setFieldValue('external', item.legends || []);
+      // form.value.setFieldValue('legends', item.legends || []);
+      if(item.legends?.length) {
+        legends.value = item.legends;
+      } else {
+        legends.value = [];
+      }
     }
 
     status.value = item.status;
   } else {
     form.value.setFieldValue('type', 'shapes');
-    form.value.setFieldValue('legends', []);
+    // form.value.setFieldValue('legends', []);
+    legends.value = [];
     status.value = true;
   }
 
@@ -104,6 +108,14 @@ function download(path, name) {
     .catch(error => console.log(error));
 }
 
+const addField = () => {
+  state.legends.push({ color: '#0062FF', description: '' });
+}
+
+const deleteField = (id) => {
+  state.legends.splice(id, 1);
+}
+
 function onSubmit(values, { setErrors, resetForm }) {
   const layersStore = useLayersStore();
   const { 
@@ -113,14 +125,13 @@ function onSubmit(values, { setErrors, resetForm }) {
     file,
     styles,
     description,
-    legends
   } = values;
 
   let body = {
     name: name,
     type: type,
     status: status.value,
-    legends: legends,
+    legends: [...legends.value.filter(x => x.color !== '' && x.description !== '')],
     updated_at: new Date(),
   }
 
@@ -202,7 +213,6 @@ defineExpose({
                   <p class="text-sm leading-6 text-gray-600">
                     {{ edit ? 'Edita':'Ingresa' }} la información relacionada a la capa.
                   </p>
-                  <!-- <p>{{ errors }}</p> -->
                   <fieldset :disabled="isSubmitting">
                     <Field 
                       type="hidden"
@@ -253,6 +263,7 @@ defineExpose({
                               id="layer_type"
                               class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                               autocomplete="off"
+                              :disabled="!!object"
                             >
                               <option value="shapes" selected>Geometrías (zip)</option>
                               <option value="raster">Ráster (tif)</option>
@@ -327,23 +338,6 @@ defineExpose({
                         </ul>
                       </div>
 
-                      <!-- <div class="col-span-full">
-                        <label
-                          for="layer_description"
-                          class="block text-sm font-medium leading-6 text-gray-900"
-                          >Descripción</label
-                        >
-                        <div class="mt-2">
-                          <Field
-                            as="textarea"
-                            id="layer_description"
-                            name="description"
-                            rows="3"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                          />
-                        </div>
-                      </div> -->
-
                       <div v-if="edit" class="sm:col-span-3">
                         <div class="relative flex items-start">
                           <div class="flex h-6 items-center">
@@ -354,6 +348,67 @@ defineExpose({
                           </div>
                         </div>
                       </div>
+
+                      <template v-if="values.type === 'raster'">
+                        <div class="col-span-full">
+                          <hr class="mb-2" />
+                          <p class="pl-2 block text-sm font-bold leading-6 text-gray-500 uppercase">Leyendas</p>
+                          <hr class="mt-2" />
+                        </div>
+
+                        <div class="col-span-full">
+                          <div v-for="(field, idx) in legends" :key="idx" class="grid grid-cols-1 gap-x-6 gap-y-1 sm:grid-cols-6 items-end mb-4">
+                            <div class="col-span-full">
+                              <label
+                                class="block text-sm font-medium leading-6 text-gray-900"
+                                >{{ `Leyenda #${idx+1}` }}</label
+                              >
+                            </div>
+                            <div class="col-span-2">
+                              <label
+                                :for="`legend_color_${idx}`"
+                                class="block text-sm font-medium leading-6 text-gray-900"
+                                >Color</label
+                              >
+                              <input 
+                                type="color"
+                                :id="`legend_color_${idx}`"
+                                autocomplete="off"
+                                :name="`legends[${idx}].color`"
+                                class="block w-full rounded-md border-0 h-[36px] text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                v-model="legends[idx].color"
+                              >
+                            </div>
+                            <div class="col-span-3">
+                              <label
+                                :for="`legend_description_${idx}`"
+                                class="block text-sm font-medium leading-6 text-gray-900"
+                                >Leyenda</label
+                              >
+                              <input 
+                                type="text"
+                                :id="`legend_description_${idx}`"
+                                autocomplete="off"
+                                :name="`legends[${idx}].description`"
+                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                v-model="legends[idx].description"
+                              />
+                            </div>
+                            <div class="col-span-1">
+                              <button type="button" @click="deleteField(idx)" class="rounded-md bg-white px-4 py-[11px] text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                                </svg>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-span-full text-right">
+                          <button @click="addField()" type="button" class="rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                            Agregar
+                          </button>
+                        </div>
+                      </template>
                     </div>
                   </fieldset>
                 </div>
