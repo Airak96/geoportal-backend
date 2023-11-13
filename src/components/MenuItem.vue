@@ -3,6 +3,7 @@
   import { ref } from 'vue';
 
   import { useCategoriesStore } from '../stores/categories.store';
+  import { useLayersStore } from '../stores/layers.store';
   import { useGeoserverStore } from '../stores/geoserver.store';
   import MenuItem from "./MenuItem.vue";
 
@@ -59,6 +60,7 @@
             rules: layer.legends,
             localName: layer.name,
             localType: layer.type,
+            layerName: layer.external_id,
           }
 
           props.legends.push(obj);
@@ -70,6 +72,25 @@
         props.legends.splice(index, 1);
       }
     }
+  }
+
+  function download(path, name) {
+    let layersStore = useLayersStore();
+    layersStore.download(path)
+      .then(res => {
+        let file_name = name+"."+path.split(".")[1];
+        file_name = file_name.replace(/ /g, '_');
+
+        const url = window.URL.createObjectURL(new Blob([res.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', file_name);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        console.log('Archivo descargado!');
+      })
+      .catch(error => console.log(error));
   }
 </script>
 <template>
@@ -87,6 +108,13 @@
           <div class="flex items-center" v-if="option.status && option.published">
             <input id="color-0-mobile" :name="option.ref" v-model="option.show" @change="toggleLegend(option, option.show)" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
             <label for="color-0-mobile" class="ml-3 text-sm text-gray-500">{{ option.name }}</label>
+            <span class="ml-3">
+              <a href="javascript:void(0)" class="text-gray-600" @click="download(option.filepath, option.name)">
+                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                </svg>
+              </a>
+            </span>
           </div>
         </template>
       </div>
