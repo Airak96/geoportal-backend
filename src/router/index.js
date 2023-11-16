@@ -21,7 +21,7 @@ import CategoryListView from '../views/categories/ListView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  linkActiveClass: 'border-indigo-500 text-gray-900',
+  linkActiveClass: 'border-blue-500 text-gray-900',
   routes: [
     {
       path: '/',

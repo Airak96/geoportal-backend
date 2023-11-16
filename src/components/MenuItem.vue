@@ -95,9 +95,13 @@
 </script>
 <template>
   <fieldset class="pl-5 mt-2" v-if="item.status">
-    <legend class="w-full px-2">
+    <legend class="w-full">
       <button type="button" class="flex gap-x-3 -ml-5 w-full items-center justify-between px-2 text-gray-400 hover:text-gray-500" aria-controls="filter-section-0" aria-expanded="false">
-        <span>-</span>
+        <span>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+            <path d="M19.906 9c.382 0 .749.057 1.094.162V9a3 3 0 00-3-3h-3.879a.75.75 0 01-.53-.22L11.47 3.66A2.25 2.25 0 009.879 3H6a3 3 0 00-3 3v3.162A3.756 3.756 0 014.094 9h15.812zM4.094 10.5a2.25 2.25 0 00-2.227 2.568l.857 6A2.25 2.25 0 004.951 21H19.05a2.25 2.25 0 002.227-1.932l.857-6a2.25 2.25 0 00-2.227-2.568H4.094z" />
+          </svg>
+        </span>
         <span class="text-base font-medium text-gray-600 flex-grow text-left">{{ item.name }}</span>
         <span v-if="lvl > 1 && !loaded" class="flex items-end"><button @click="loadData()" type="button" class="text-sm">(Mostrar)</button></span>
       </button>
@@ -106,7 +110,7 @@
       <div class="space-y-3">
         <template v-for="option in item.layers">
           <div class="flex items-center" v-if="option.status && option.published">
-            <input id="color-0-mobile" :name="option.ref" v-model="option.show" @change="toggleLegend(option, option.show)" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+            <input id="color-0-mobile" :name="option.ref" v-model="option.show" @change="toggleLegend(option, option.show)" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
             <label for="color-0-mobile" class="ml-3 text-sm text-gray-500">{{ option.name }}</label>
             <span class="ml-3">
               <a href="javascript:void(0)" class="text-gray-600" @click="download(option.filepath, option.name)">

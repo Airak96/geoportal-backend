@@ -27,11 +27,11 @@
   const map = ref(null);
 
   // config mapa
-  const long = -79.05054214735792;
+  const long = -79.15054214735792;
   const lati = -4.887745621654;
   const center = ref(transform([long, lati], 'EPSG:4326', 'EPSG:3857'));
   const projection = ref("EPSG:3857");
-  const zoom = ref(9);
+  const zoom = ref(9.6);
   const rotation = ref(0);
 
   // sistema de referencia coordenadas
@@ -89,64 +89,70 @@
   <div class="grid grid-cols-5 gap-3 h-full">
     <div class="col-span-5 relative h-full">      
       <!-- filtro del mapa -->
-      <div class="absolute top-10 right-10 z-10 w-[320px]">
-        <div class="bg-white rounded-lg px-5 py-5 shadow-md mb-5">
-          <form>
-            <fieldset>
-              <legend class="w-full px-2">
-                <button type="button" class="flex w-full items-center justify-between px-2 text-gray-400 hover:text-gray-500" aria-controls="filter-section-0" aria-expanded="false">
-                  <span class="text-lg font-medium text-gray-900">Filtro de Capas</span>
-                </button>
-              </legend>
-              <MenuItem 
-                v-if="data?.length && data.length > 0"
-                v-for="item in data"
-                :item="item"
-                :lvl="1"
-                :legends="selected"
-              />
-            </fieldset>
-          </form>
-        </div>
-
-        <div class="bg-white rounded-lg px-5 py-5 shadow-md">
-          <legend class="w-full px-2">
-            <button type="button" class="flex w-full items-center justify-between px-2 text-gray-400 hover:text-gray-500" aria-controls="filter-section-0" aria-expanded="false">
-              <span class="text-lg font-medium text-gray-900">Leyenda</span>
-            </button>
-          </legend>
-          <template v-if="selected?.length && selected.length > 0">
-            <template v-for="obj in selected">
-              <p class="ml-4 mt-4 font-bold text-xs uppercase">{{ obj.localName }}</p>
-              <template v-if="obj.localType === 'shapes'">
-                <template v-for="legend in obj.rules">
-                  <div v-if="legend.ElseFilter !== 'true'" class="flex items-center gap-3 pl-4 mt-2">
-                    <div class="w-[20px] h-4" :style="{ backgroundColor: legend.symbolizers[0].Polygon.fill }"></div>
-                    <div class="text-xs text-gray-500">{{ legend.name }}</div>
-                  </div>
-                </template>
-              </template>
-              <template v-else-if="obj.localType === 'raster'">
-                <template v-for="legend in obj.rules">
-                  <div class="flex items-center gap-3 pl-4 mt-2">
-                    <div class="w-[20px] h-4" :style="{ backgroundColor: legend.color }"></div>
-                    <div class="text-xs text-gray-500">{{ legend.description?.toUpperCase() }}</div>
-                  </div>
-                </template>
-              </template>      
-            </template>             
-          </template>
-
-          <template v-if="selected?.length === 0">
-            <div class="pl-4 text-sm italic text-gray-500 mt-1">
-              (No hay capas seleccionadas)
+      <div class="absolute top-8 left-14 z-10 w-[320px]">
+        <div class="bg-white rounded-lg shadow-md mb-5 overflow-hidden">
+          <div class="w-full bg-[#dff1ff] px-5">
+            <div class="flex w-full items-center justify-between py-2 text-black/80">
+              <span class="text-sm font-bold uppercase">Capas de información</span>
             </div>
-          </template>
+          </div>
+          <div class="px-5 pt-2 pb-4 overflow-y-auto max-h-[500px]">
+            <form>
+              <fieldset>
+                <MenuItem 
+                  v-if="data?.length && data.length > 0"
+                  v-for="item in data"
+                  :item="item"
+                  :lvl="1"
+                  :legends="selected"
+                />
+              </fieldset>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="absolute bottom-10 right-10 z-10 w-[320px]">
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+          <div class="w-full bg-[#dff1ff] px-5">
+            <div class="flex w-full items-center justify-between py-2 text-black/80">
+              <span class="text-sm font-bold uppercase">Leyendas</span>
+            </div>
+          </div>
+          <div class="px-5 pt-2 pb-5 overflow-y-auto max-h-[350px]">
+            <template v-if="selected?.length && selected.length > 0">
+              <template v-for="obj in selected">
+                <p class="ml-4 mt-4 font-bold text-xs uppercase">{{ obj.localName }}</p>
+                <template v-if="obj.localType === 'shapes'">
+                  <template v-for="legend in obj.rules">
+                    <div v-if="legend.ElseFilter !== 'true'" class="flex items-center gap-3 pl-4 mt-2">
+                      <div class="w-[20px] h-4" :style="{ backgroundColor: legend.symbolizers[0].Polygon.fill }"></div>
+                      <div class="text-xs text-gray-500">{{ legend.name }}</div>
+                    </div>
+                  </template>
+                </template>
+                <template v-else-if="obj.localType === 'raster'">
+                  <template v-for="legend in obj.rules">
+                    <div class="flex items-center gap-3 pl-4 mt-2">
+                      <div class="w-[20px] h-4" :style="{ backgroundColor: legend.color }"></div>
+                      <div class="text-xs text-gray-500">{{ legend.description?.toUpperCase() }}</div>
+                    </div>
+                  </template>
+                </template>      
+              </template>             
+            </template>
+
+            <template v-if="selected?.length === 0">
+              <div class="pl-4 text-sm italic text-gray-500 mt-1">
+                (No hay capas seleccionadas)
+              </div>
+            </template>
+          </div>
         </div>
       </div>
 
       <!-- MAPA (Open Layers: vue3-openlayers) -->
-      <div class="rounded-xl overflow-hidden h-full">
+      <div class="overflow-hidden h-full">
         <ol-map
           ref="map"
           :loadTilesWhileAnimating="true"

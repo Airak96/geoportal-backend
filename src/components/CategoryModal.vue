@@ -147,29 +147,6 @@ defineExpose({
           }"
           class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6"
         >
-          <div class="absolute right-0 top-0 hidden pr-4 pt-4 sm:block">
-            <!-- <button
-              @click="closeModal(null)"
-              type="button"
-              class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-            >
-              <span class="sr-only">Close</span>
-              <svg
-                class="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button> -->
-          </div>
           <div>
             <Form @submit="onSubmit" :validation-schema="schema" v-slot="{ errors, isSubmitting, handleReset }" ref="form" method="POST">
               <div class="space-y-12">
@@ -201,13 +178,13 @@ defineExpose({
                         >
                         <div class="mt-2">
                           <div
-                            class="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600"
+                            class="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-blue-600"
                           >
                             <Field
                               type="text"
                               name="name"
                               id="category_name"
-                              class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                              class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
                               autocomplete="off"
                             />
                           </div>
@@ -226,7 +203,7 @@ defineExpose({
                             id="category_description"
                             name="description"
                             rows="3"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
                           />
                         </div>
                       </div> -->
@@ -234,7 +211,7 @@ defineExpose({
                       <div v-if="edit" class="sm:col-span-3">
                         <div class="relative flex items-start">
                           <div class="flex h-6 items-center">
-                            <input id="category_status" name="status" type="checkbox" :checked="status" @click="() => status = !status" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                            <input id="category_status" name="status" type="checkbox" :checked="status" @click="() => status = !status" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-600">
                           </div>
                           <div class="ml-3 text-sm leading-6">
                             <label for="category_status" class="font-medium text-gray-900">Activo</label>
@@ -256,7 +233,7 @@ defineExpose({
                 </button>
                 <button :disabled="isSubmitting" :class="{ 'cursor-not-allowed':isSubmitting }"
                   type="submit"
-                  class="flex items-center justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                  class="flex items-center justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
                 >
                   <svg v-show="isSubmitting" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>

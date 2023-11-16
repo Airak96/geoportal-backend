@@ -35,7 +35,7 @@
             <div class="-ml-2 mr-2 flex items-center md:hidden">
               <!-- Mobile menu button -->
               <button type="button" @click="openMenu = !openMenu"
-                class="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+                class="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
                 aria-controls="mobile-menu" aria-expanded="false">
                 <span class="sr-only">Open main menu</span>
                 <!--
@@ -62,7 +62,7 @@
               <span class="font-bold text-slate-500 uppercase text-sm">Panel de Administración</span>
             </div>
             <div class="hidden md:ml-6 md:flex md:space-x-8">
-              <!-- Current: "border-indigo-500 text-gray-900", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" -->
+              <!-- Current: "border-blue-500 text-gray-900", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" -->
               <!-- <RouterLink to="/admin/categorias" class="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">Categorías</RouterLink> -->
               <!-- <RouterLink to="/admin/capas" class="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">Capas</RouterLink> -->
               <!-- <a href="#"
@@ -74,7 +74,7 @@
               <div class="relative ml-3">
                 <div>
                   <button type="button"
-                    class="flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                    class="flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                     id="user-menu-button" aria-expanded="false" aria-haspopup="true"
                     v-on="showDropdown ? { click: closeDropdown }:{ click: openDropdown }">
                     <span class="sr-only">Open user menu</span>
@@ -104,7 +104,7 @@
       <!-- Mobile menu, show/hide based on menu state. -->
       <div class="md:hidden" id="mobile-menu" :class="{ 'hidden': !openMenu }">
         <div class="space-y-1 pb-3 pt-2">
-          <!-- Current: "bg-indigo-50 border-indigo-500 text-indigo-700", Default: "border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700" -->
+          <!-- Current: "bg-blue-50 border-blue-500 text-blue-700", Default: "border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700" -->
           <!-- <a href="#"
             class="block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium text-gray-500 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700 sm:pl-5 sm:pr-6">Capas</a> -->
           <!-- <a href="#"

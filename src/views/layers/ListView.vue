@@ -28,7 +28,7 @@
           <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
             <div class="mb-6 flex items-center justify-start gap-x-6">
               <button type="button" @click="openModal()"
-                class="relative inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                class="relative inline-flex items-center gap-x-1.5 rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
                 <svg class="-ml-0.5 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M6.429 9.75L2.25 12l4.179 2.25m0-4.5l5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0L21.75 12l-4.179 2.25m0 0l4.179 2.25L12 21.75 2.25 16.5l4.179-2.25m11.142 0l-5.571 3-5.571-3" />
                 </svg>
@@ -55,7 +55,7 @@
                     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">Activo</td>
                     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">30/06/2023</td>
                     <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                      <RouterLink to="/admin/capas/editar" class="text-indigo-600 hover:text-indigo-900">Editar</RouterLink>
+                      <RouterLink to="/admin/capas/editar" class="text-blue-600 hover:text-blue-900">Editar</RouterLink>
                     </td>
                   </tr>
                   <tr>
@@ -64,7 +64,7 @@
                     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">Activo</td>
                     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">30/06/2023</td>
                     <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                      <a href="#" class="text-indigo-600 hover:text-indigo-900">Editar</a>
+                      <a href="#" class="text-blue-600 hover:text-blue-900">Editar</a>
                     </td>
                   </tr>
                 </tbody>
@@ -99,7 +99,7 @@
         <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
           <div :class="{ 'ease-out duration-300 opacity-100 translate-y-0 sm:scale-100': showModal, 'ease-in duration-200 opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95': !showModal }" class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
             <div class="absolute right-0 top-0 hidden pr-4 pt-4 sm:block">
-              <button @click="closeModal()" type="button" class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+              <button @click="closeModal()" type="button" class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                 <span class="sr-only">Close</span>
                 <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -119,7 +119,7 @@
                         <label for="country" class="block text-sm font-medium leading-6 text-gray-900">Categoría
                         </label>
                         <div class="mt-2">
-                          <select id="country" name="country" autocomplete="country-name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                          <select id="country" name="country" autocomplete="country-name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:max-w-xs sm:text-sm sm:leading-6">
                             <option>Categoría 1</option>
                             <option>Categoría 2</option>
                             <option>Categoría 3</option>
@@ -130,8 +130,8 @@
                       <div class="col-span-full">
                         <label for="username" class="block text-sm font-medium leading-6 text-gray-900">Nombre</label>
                         <div class="mt-2">
-                          <div class="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600">
-                            <input type="text" name="name" id="name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                          <div class="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-blue-600">
+                            <input type="text" name="name" id="name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6">
                           </div>
                         </div>
                       </div>
@@ -139,7 +139,7 @@
                       <div class="col-span-full">
                         <label for="about" class="block text-sm font-medium leading-6 text-gray-900">Descripción</label>
                         <div class="mt-2">
-                          <textarea id="about" name="about" rows="3" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"></textarea>
+                          <textarea id="about" name="about" rows="3" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"></textarea>
                         </div>
                       </div>
                     </div>
@@ -148,7 +148,7 @@
 
                 <div class="mt-6 flex items-center justify-end gap-x-4">
                   <button @click="closeModal()" type="button" class="rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">Cerrar</button>
-                  <button type="submit" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Crear capa</button>
+                  <button type="submit" class="rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Crear capa</button>
                 </div>
               </form>
             </div>
