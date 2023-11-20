@@ -16,10 +16,10 @@ export const useAuthStore = defineStore({
       const user = await fetchWrapper.post(`${baseUrl}/login`, { email, password });
 
       // update pinia state
-      this.user = user;
+      this.user = user.data;
 
       // store user details and jwt in local storage to keep user logged in between page refreshes
-      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('user', JSON.stringify(user.data));
 
       // redirect to previous url or default to home page
       router.push(this.returnUrl || '/admin');

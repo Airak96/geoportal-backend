@@ -1,11 +1,15 @@
 <script setup>
   import { ref } from 'vue';
+  import { storeToRefs } from 'pinia'
   import { RouterView, RouterLink } from 'vue-router'
   import { useAuthStore } from '../stores/auth.store'
 
   const showDropdown = ref(false),
         openMenu = ref(false),
         hidden   = ref(true);
+
+  const authStore = useAuthStore();
+  const { user } = storeToRefs(authStore);
     
   const openDropdown = () => {
     hidden.value = false;
@@ -22,7 +26,6 @@
   };
 
   const logout = () => {
-    const authStore = useAuthStore();
     authStore.logout();
   }
 </script>
@@ -62,11 +65,8 @@
               <span class="font-bold text-slate-500 uppercase text-sm">Panel de Administración</span>
             </div>
             <div class="hidden md:ml-6 md:flex md:space-x-8">
-              <!-- Current: "border-blue-500 text-gray-900", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" -->
-              <!-- <RouterLink to="/admin/categorias" class="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">Categorías</RouterLink> -->
-              <!-- <RouterLink to="/admin/capas" class="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">Capas</RouterLink> -->
-              <!-- <a href="#"
-                class="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">Usuarios</a> -->
+              <RouterLink to="/admin" class="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">Mapa</RouterLink>
+              <RouterLink v-if="user.data.role.name === 'admin'" to="/admin/users" class="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">Usuarios</RouterLink>
             </div>
           </div>
           <div class="flex items-center">
@@ -90,8 +90,8 @@
                   class="transition ease-out duration-200 absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
                   :class="{ 'transform opacity-100 scale-100': showDropdown, 'transition ease-in duration-75 transform opacity-0 scale-90 ': !showDropdown, 'hidden': hidden }"
                   role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
-                  <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem"
-                    tabindex="-1" id="user-menu-item-1">Ajustes</a>
+                  <!-- <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem"
+                    tabindex="-1" id="user-menu-item-1">Ajustes</a> -->
                   <button type="button" @click="logout()" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left" role="menuitem"
                     tabindex="-1" id="user-menu-item-2">Salir</button>
                 </div>

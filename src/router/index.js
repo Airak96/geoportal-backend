@@ -10,18 +10,13 @@ import AdminLayout from '../layouts/AdminLayout.vue'
 
 // Views
 import LoginView from '../views/auth/LoginView.vue'
-
 import HomeView from '../views/HomeView.vue'
-import MainView from '../views/MainView.vue'
-
-import LayersListView from '../views/layers/ListView.vue'
-import LayersEditView from '../views/layers/EditView.vue'
-
 import CategoryListView from '../views/categories/ListView.vue'
+import UsersView from '../views/users/UsersView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  linkActiveClass: 'border-blue-500 text-gray-900',
+  // linkActiveClass: 'border-blue-500 text-gray-900',
   routes: [
     {
       path: '/',
@@ -51,6 +46,10 @@ const router = createRouter({
           path: '',
           component: CategoryListView
         },
+        {
+          path: 'users',
+          component: UsersView
+        }
       ],
     },
     { path: "/:pathMatch(.*)*", component: NotFoundView },

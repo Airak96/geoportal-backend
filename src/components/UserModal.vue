@@ -1,9 +1,12 @@
 <script setup>
 // vue imports
 import { ref } from "vue";
+import { storeToRefs } from 'pinia';
+import { generatePassword } from "../helpers/utils";
 
 // store imports
-import { useCategoriesStore } from '../stores/categories.store'
+import { useUsersStore } from '../stores/users.store'
+import { useRolesStore } from '../stores/roles.store'
 
 // form imports
 import { Form, Field } from "vee-validate";
@@ -13,40 +16,44 @@ import * as Yup from "yup";
 const emit = defineEmits(['refresh']);
 
 // logic
+const rolesStore = useRolesStore();
+const usersStore = useUsersStore();
+const { roles } = storeToRefs(rolesStore);
+rolesStore.getAll();
+
 const showModal = ref(false); // false: modal oculto | true: modal abierto
 const hidden = ref(true);     // false: overlay oculto | true: overlay abierto
 const edit = ref(false);      // false: nuevo | true: editando
-const parentRef = ref(null);  // referencia del padre
 const object = ref(null);     // objeto a editar
 const form = ref(null);       // referencia del formulario
 
-const status = ref(true);     // checkbox de estado == false: Inactivo | true: Activo
-
 const schema = Yup.object().shape({
-  external: Yup.string(),
   name: Yup.string().required("El nombre es requerido"),
-  description: Yup.string(),
+  email: Yup.string(),
+  password: Yup.string(),
+  role: Yup.string(),
+  external: Yup.string(),
 });
 
-const openModal = (item, type, parent) => {
+const openModal = (item, type) => {
   object.value = item;
-  parentRef.value = parent;
   edit.value = (type === 'edit');
-  
+
   if(item) {
     form.value.setFieldValue('name', item.name);
-    form.value.setFieldValue('description', item.description || '');
+    form.value.setFieldValue('email', item.email);
+    form.value.setFieldValue('role', item.role_id);
     form.value.setFieldValue('external', item.external_id);
-    status.value = item.status;
-  } else {
-    status.value = true;
+  } else {    
+    form.value.setFieldValue('role', "2");
+    form.value.setFieldValue('password', generatePassword(15, 'a-z,A-Z,0-9'));
   }
 
   hidden.value = false;
   setTimeout(() => {
     showModal.value = true;
   }, 100);
-};
+}
 
 const closeModal = (reset) => {
   if(reset)
@@ -59,33 +66,31 @@ const closeModal = (reset) => {
 
 const refreshValues = (data) => {
   object.value.name = data.name;
-  object.value.description = data.description;
-  object.value.status = status.value;
-  object.value.updated_at = data.updated_at;
+  object.value.email = data.email;
+  object.value.role_id = data.role;
 }
 
 function onSubmit(values, { setErrors, resetForm }) {
-  const categoriesStore = useCategoriesStore();
   const { 
+    name,
+    email,
+    password,
+    role,
     external,
-    name, 
-    description
   } = values;
 
   let body = {
     name: name,
-    status: status.value,
+    email: email,
+    role_id: role,
     updated_at: new Date(),
   }
 
-  if(description)
-    body.description = description;
-
-  if(parentRef.value)
-    body.parent_id = parentRef.value.id_category;
-
+  if(password) 
+    body.password = password
+  
   if(edit.value && external) {
-    return categoriesStore.edit(external, body)
+    return usersStore.edit(external, body)
       .then(res => {
         refreshValues(body);
         resetForm();
@@ -93,21 +98,12 @@ function onSubmit(values, { setErrors, resetForm }) {
       })
       .catch(error => console.log(error));
   } else {
-    return categoriesStore.add(body)
+    return usersStore.add(body)
       .then(res => {
         resetForm();
         closeModal();
         
-        if(parentRef.value) {
-          if(parentRef.value.categories) {
-            parentRef.value.categories.push(res.data);
-          } else {
-            parentRef.value.categories = [];
-            parentRef.value.categories.push(res.data);
-          }
-        }else {
-          emit('refresh', res.data);
-        }
+        emit('refresh', res.data);
       })
       .catch(error => console.log(error));
   }
@@ -117,7 +113,6 @@ function onSubmit(values, { setErrors, resetForm }) {
 defineExpose({
   openModal,
 });
-
 </script>
 <template>
   <div
@@ -152,10 +147,10 @@ defineExpose({
               <div class="space-y-12">
                 <div class="border-b border-gray-900/10 pb-12">
                   <h2 class="text-lg font-semibold leading-5 text-gray-900">
-                    {{ edit ? 'Editar':'Nueva' }} categoría
+                    {{ edit ? 'Editar':'Nuevo' }} usuario
                   </h2>
                   <p class="text-sm leading-6 text-gray-600">
-                    {{ edit ? 'Edita':'Ingresa' }} la información relacionada a la categoría.
+                    {{ edit ? 'Edita':'Ingresa' }} la información relacionada al usuario.
                   </p>
                   <fieldset :disabled="isSubmitting">
                     <Field 
@@ -165,14 +160,9 @@ defineExpose({
                     <div
                       class="mt-5 grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-6"
                     >
-                      <div class="col-span-full" v-if="parentRef">
-                        <div class="bg-gray-100 border border-gray-200 py-3 px-4 rounded">
-                          <p class="mb-0 text-sm truncate"><span class="font-bold">Categoría relacionada:</span> {{ parentRef?.name }}</p>
-                        </div>
-                      </div>
                       <div class="col-span-full">
                         <label
-                          for="category_name"
+                          for="user_name"
                           class="block text-sm font-medium leading-6 text-gray-900"
                           >Nombre</label
                         >
@@ -183,24 +173,78 @@ defineExpose({
                             <Field
                               type="text"
                               name="name"
-                              id="category_name"
+                              id="user_name"
                               class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
                               autocomplete="off"
                             />
                           </div>
                         </div>
                       </div>
-                      
-                      <div v-if="edit" class="sm:col-span-3">
-                        <div class="relative flex items-start">
-                          <div class="flex h-6 items-center">
-                            <input id="category_status" name="status" type="checkbox" :checked="status" @click="() => status = !status" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-600">
-                          </div>
-                          <div class="ml-3 text-sm leading-6">
-                            <label for="category_status" class="font-medium text-gray-900">Activo</label>
+                      <div class="col-span-full">
+                        <label
+                          for="user_email"
+                          class="block text-sm font-medium leading-6 text-gray-900"
+                          >Email</label
+                        >
+                        <div class="mt-2">
+                          <div
+                            class="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-blue-600"
+                          >
+                            <Field
+                              type="email"
+                              name="email"
+                              id="user_email"
+                              class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+                              autocomplete="off"
+                            />
                           </div>
                         </div>
                       </div>
+                      <div v-if="!edit" class="col-span-full">
+                        <label
+                          for="user_pass"
+                          class="block text-sm font-medium leading-6 text-gray-900"
+                          >Contraseña</label
+                        >
+                        <div class="mt-2">
+                          <div
+                            class="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-blue-600"
+                          >
+                            <Field
+                              type="text"
+                              name="password"
+                              id="user_pass"
+                              class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+                              autocomplete="off"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-span-full">
+                        <label
+                          for="user_type"
+                          class="block text-sm font-medium leading-6 text-gray-900"
+                          >Tipo de cuenta</label
+                        >
+                        <div class="mt-2">
+                          <div
+                            class="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-blue-600"
+                          >
+                            <Field
+                              as="select"
+                              name="role"
+                              id="user_type"
+                              class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+                              autocomplete="off"
+                            >
+                              <option value="1" selected>Administrador</option>
+                              <option value="2">Usuario</option>
+                            </Field>
+                          </div>
+                        </div>
+                      </div>
+
                     </div>
                   </fieldset>
                 </div>
@@ -222,7 +266,7 @@ defineExpose({
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  {{ edit ? 'Guardar cambios':'Crear categoría' }}
+                  {{ edit ? 'Guardar cambios':'Crear usuario' }}
                 </button>
               </div>
             </Form>

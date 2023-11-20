@@ -19,7 +19,6 @@
   const childComponentRef = ref(null);
   const deleteModalRef = ref(null);
   const publishModalRef = ref(null);
-  // const layerModalRef = ref(null);
 
   const dynamicContainer = ref(null);
   let dynamicModal = null;
@@ -171,11 +170,13 @@
                   @publish="publish"
                 />
                 <template v-if="!categories?.loading && categories.length == 0">
-                  <th colspan="5" class="p-5">
-                    <div class="relative block w-full rounded-lg border-2 border-dashed border-gray-300 p-4 text-center">
-                      <span class="block text-sm font-semibold italic text-gray-500">Añade una categoría para verla aquí.</span>
-                    </div>
-                  </th>
+                  <tr>
+                    <th colspan="5" class="p-5">
+                      <div class="relative block w-full rounded-lg border-2 border-dashed border-gray-300 p-4 text-center">
+                        <span class="block text-sm font-semibold italic text-gray-500">Añade una categoría para verla aquí.</span>
+                      </div>
+                    </th>
+                  </tr>
                 </template>
               </tbody>
             </table>
