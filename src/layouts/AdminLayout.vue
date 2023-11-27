@@ -66,7 +66,7 @@
             </div>
             <div class="hidden md:ml-6 md:flex md:space-x-8">
               <RouterLink to="/admin" class="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">Mapa</RouterLink>
-              <RouterLink v-if="user.data.role.name === 'admin'" to="/admin/users" class="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">Usuarios</RouterLink>
+              <RouterLink v-if="user?.data?.role?.name === 'admin'" to="/admin/users" class="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">Usuarios</RouterLink>
             </div>
           </div>
           <div class="flex items-center">
