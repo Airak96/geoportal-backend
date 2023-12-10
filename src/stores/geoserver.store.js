@@ -25,14 +25,6 @@ export const useGeoserverStore = defineStore({
     createRasterLayer(id) {    
       return fetchWrapper.post(`${baseUrl}/create/raster/${id}`, null);
     },
-    
-    publishShapes(id) {    
-      return fetchWrapper.post(`${baseUrl}/publish/shape/${id}`, null);
-    },
-    publishRaster(id) {    
-      return fetchWrapper.post(`${baseUrl}/publish/raster/${id}`, null);
-    },
-
     legends(layer) {
       return fetchWrapper.get(`${geourl}?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=application/json&WIDTH=35&HEIGHT=15&LAYER=${workspace}:${layer}`)
     }
