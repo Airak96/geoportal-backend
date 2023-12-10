@@ -17,10 +17,10 @@
       let arr = res.data;
       data.value = arr.map(obj => ({
         ...obj,
-        layers: obj.layers.map(lay => ({ ...lay, show: false })),
+        layers: obj.layers.map(lay => ({ ...lay, show: false, loaded: false })),
       }));
     })
-    .catch(error =>console.log(error));
+    .catch(error => console.log(error));
 
   // formato de fuentes
   const childComponentRef = ref(null);
@@ -67,7 +67,7 @@
                 return res.json();
               })
               .then(data => {
-                console.log("DATOS =>", data.features[0]?.properties);
+                // console.log("DATOS =>", data.features[0]?.properties);
                 if(data && data.features?.length) {
                   childComponentRef.value?.openModal(data.features[0]?.properties)
                 } else {
@@ -112,7 +112,7 @@
         </div>
       </div>
 
-      <div class="absolute bottom-10 right-10 z-10 w-[320px]">
+      <div class="absolute top-8 right-10 z-10 w-[320px]">
         <div class="bg-white rounded-lg shadow-md overflow-hidden">
           <div class="w-full bg-[#dff1ff] px-5">
             <div class="flex w-full items-center justify-between py-2 text-black/80">
@@ -126,8 +126,14 @@
                 <template v-if="obj.localType === 'shapes'">
                   <template v-for="legend in obj.rules">
                     <div v-if="legend.ElseFilter !== 'true'" class="flex items-center gap-3 pl-4 mt-2">
-                      <div class="w-[20px] h-4" :style="{ backgroundColor: legend.symbolizers[0].Polygon.fill }"></div>
-                      <div class="text-xs text-gray-500">{{ legend.name }}</div>
+                      <template v-if="legend.symbolizers[0]?.Polygon">
+                        <div class="w-[20px] h-4" :style="{ backgroundColor: legend.symbolizers[0]?.Polygon?.fill }"></div>
+                        <div class="text-xs text-gray-500">{{ legend.name }}</div>                        
+                      </template>
+                      <template v-if="legend.symbolizers[0]?.Point">
+                        <div class="w-[20px] h-4" :style="{ backgroundColor: legend.symbolizers[0]?.Point?.graphics[0]?.fill }"></div>
+                        <div class="text-xs text-gray-500">{{ legend.name }}</div> 
+                      </template>
                     </div>
                   </template>
                 </template>

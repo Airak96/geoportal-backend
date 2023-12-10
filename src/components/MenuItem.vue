@@ -41,19 +41,27 @@
 
   function toggleLegend(layer, show) {
     if(show) {
+      // if(!layer.loaded)
+      //   layer.loaded = true;
+
       if(layer.type === 'shapes') {
-        geoserverStore.legends(layer.external_id)
-          .then(res => {
-            let geoLegend = res.data?.Legend;
-            if(geoLegend && geoLegend?.length) {
-              let obj = geoLegend[0];
-              obj.localName = layer.name;
-              obj.localType = layer.type;
-              props.legends.push(obj);
-            }
-          }).catch(err => {
-            console.log(err);
-          });
+        if(!layer.legends?.layerName) {
+          geoserverStore.legends(layer.external_id)
+            .then(res => {
+              let geoLegend = res.data?.Legend;
+              if(geoLegend && geoLegend?.length) {
+                let obj = geoLegend[0];
+                obj.localName = layer.name;
+                obj.localType = layer.type;
+                layer.legends = obj;
+                props.legends.push(obj);
+              }
+            }).catch(err => {
+              console.log(err);
+            });
+        } else {
+          props.legends.push(layer.legends);
+        }
       } else {
         if(layer.legends?.length) {
           let obj = {

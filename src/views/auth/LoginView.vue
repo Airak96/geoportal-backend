@@ -106,12 +106,5 @@
         </button>
       </div>
     </Form>
-
-    <!-- <p class="text-center text-sm leading-6 text-gray-500">
-      <a href="#" class="font-semibold text-blue-600 hover:text-blue-500"
-        >¿Olvidaste tu contraseña?</a
-      >
-    </p> -->
-
   </div>
 </template>
