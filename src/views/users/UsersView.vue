@@ -1,4 +1,6 @@
 <script setup>
+import { notify } from "@kyvg/vue3-notification";
+
 // vue imports
 import { ref } from 'vue';
 import { formatDate } from '../../helpers/utils'
@@ -44,9 +46,18 @@ function deleteRecord(n, type) {
           users.value.splice(index, 1);
         }
 
-        deleteModalRef.value?.closeModal()
+        notify({
+          text: 'Usuario eliminado correctamente.',
+          type: '!text-base !bg-green-600 !border-green-900',
+        });
+
+        deleteModalRef.value?.closeModal();
       }).catch(err => {
         console.log(err);
+        notify({
+          text: err?.response?.data?.message || 'Error al procesar la solicitud.',
+          type: '!text-base !bg-red-500 !border-red-800',
+        });
       });
   }
 }

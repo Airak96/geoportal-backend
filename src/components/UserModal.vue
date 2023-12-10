@@ -1,4 +1,6 @@
 <script setup>
+import { notify } from "@kyvg/vue3-notification";
+
 // vue imports
 import { ref } from "vue";
 import { storeToRefs } from 'pinia';
@@ -29,8 +31,8 @@ const form = ref(null);       // referencia del formulario
 
 const schema = Yup.object().shape({
   name: Yup.string().required("El nombre es requerido"),
-  email: Yup.string(),
-  password: Yup.string(),
+  email: Yup.string().required("El email es requerido"),
+  password: Yup.string().required("La contraseña es requerida"),
   role: Yup.string(),
   external: Yup.string(),
 });
@@ -95,8 +97,19 @@ function onSubmit(values, { setErrors, resetForm }) {
         refreshValues(body);
         resetForm();
         closeModal();
+
+        notify({
+          text: 'Usuario editado correctamente.',
+          type: '!text-base !bg-green-600 !border-green-900',
+        });
       })
-      .catch(error => console.log(error));
+      .catch(error => {
+        console.log(error);
+        notify({
+          text: error?.response?.data?.message || 'Error al procesar la solicitud.',
+          type: '!text-base !bg-red-500 !border-red-800',
+        });
+      });
   } else {
     return usersStore.add(body)
       .then(res => {
@@ -104,8 +117,19 @@ function onSubmit(values, { setErrors, resetForm }) {
         closeModal();
         
         emit('refresh', res.data);
+
+        notify({
+          text: 'Usuario creado correctamente.',
+          type: '!text-base !bg-green-600 !border-green-900',
+        });
       })
-      .catch(error => console.log(error));
+      .catch(error => {
+        console.log(error);
+        notify({
+          text: error?.response?.data?.message || 'Error al procesar la solicitud.',
+          type: '!text-base !bg-red-500 !border-red-800',
+        });
+      });
   }
 }
 
@@ -152,6 +176,20 @@ defineExpose({
                   <p class="text-sm leading-6 text-gray-600">
                     {{ edit ? 'Edita':'Ingresa' }} la información relacionada al usuario.
                   </p>
+
+                  <div v-if="errors.name || errors.email || errors.password" class="rounded-md bg-red-50 p-4 mt-3">
+                    <div class="flex">
+                      <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
+                        </svg>
+                      </div>
+                      <div class="ml-3">
+                        <h3 class="text-sm font-medium text-red-800">Completa el formulario para continuar</h3>
+                      </div>
+                    </div>
+                  </div>
+
                   <fieldset :disabled="isSubmitting">
                     <Field 
                       type="hidden"
@@ -168,7 +206,7 @@ defineExpose({
                         >
                         <div class="mt-2">
                           <div
-                            class="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-blue-600"
+                            class="relative flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-blue-600"
                           >
                             <Field
                               type="text"
@@ -177,6 +215,11 @@ defineExpose({
                               class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
                               autocomplete="off"
                             />
+                            <div v-show="errors.name" class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                              <svg class="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                              </svg>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -188,7 +231,7 @@ defineExpose({
                         >
                         <div class="mt-2">
                           <div
-                            class="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-blue-600"
+                            class="relative flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-blue-600"
                           >
                             <Field
                               type="email"
@@ -197,6 +240,11 @@ defineExpose({
                               class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
                               autocomplete="off"
                             />
+                            <div v-show="errors.email" class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                              <svg class="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                              </svg>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -208,7 +256,7 @@ defineExpose({
                         >
                         <div class="mt-2">
                           <div
-                            class="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-blue-600"
+                            class="relative flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-blue-600"
                           >
                             <Field
                               type="text"
@@ -217,6 +265,11 @@ defineExpose({
                               class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
                               autocomplete="off"
                             />
+                            <div v-show="errors.password" class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                              <svg class="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                              </svg>
+                            </div>
                           </div>
                         </div>
                       </div>

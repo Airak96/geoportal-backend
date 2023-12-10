@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { fetchWrapper } from '../helpers/fetch-wrapper';
 import router from '../router/index';
+import { notify } from "@kyvg/vue3-notification";
 
 const baseUrl = `${import.meta.env.VITE_API_URL}/auth`;
 
@@ -20,6 +21,11 @@ export const useAuthStore = defineStore({
 
       // store user details and jwt in local storage to keep user logged in between page refreshes
       localStorage.setItem('user', JSON.stringify(user.data));
+
+      notify({
+        text: '¡Bienvenid@!',
+        type: '!text-base !bg-green-600 !border-green-900',
+      });
 
       // redirect to previous url or default to home page
       router.push(this.returnUrl || '/admin');

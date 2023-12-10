@@ -4,6 +4,7 @@
   import { RouterLink } from 'vue-router'
 
   import { useAuthStore } from '../../stores/auth.store';
+  import { notify } from "@kyvg/vue3-notification";
 
   const schema = Yup.object().shape({
     email: Yup.string().required('El email es requerido'),
@@ -15,7 +16,13 @@
     const { email, password } = values;
 
     return authStore.login(email, password)
-        .catch(error => setErrors({ apiError: error }));
+        .catch(error => {
+          setErrors({ apiError: error });
+          notify({
+            text: error?.response?.data?.message || 'Error al procesar la solicitud.',
+            type: '!text-base !bg-red-500 !border-red-800',
+          });
+        });
   }
 </script>
 <template>

@@ -1,4 +1,6 @@
 <script setup>
+  
+  import { notify } from "@kyvg/vue3-notification";
   // vue imports
   import { ref, createApp } from 'vue';
   import { storeToRefs } from 'pinia'
@@ -58,9 +60,18 @@
             } 
           }
 
+          notify({
+            text: 'Categoría eliminada correctamente.',
+            type: '!text-base !bg-green-600 !border-green-900',
+          });
+
           deleteModalRef.value?.closeModal()
-        }).catch(err => {
-          console.log(err);
+        }).catch(error => {
+          console.log(error);
+          notify({
+            text: error?.response?.data?.message || 'Error al procesar la solicitud.',
+            type: '!text-base !bg-red-500 !border-red-800',
+          });
         });
     }
 
@@ -76,9 +87,19 @@
               arr.splice(index, 1);
             } 
           }
+
+          notify({
+            text: 'Capa eliminada correctamente.',
+            type: '!text-base !bg-green-600 !border-green-900',
+          });
+
           deleteModalRef.value?.closeModal()
-        }).catch(err => {
-          console.log(err);
+        }).catch(error => {
+          console.log(error);
+          notify({
+            text: error?.response?.data?.message || 'Error al procesar la solicitud.',
+            type: '!text-base !bg-red-500 !border-red-800',
+          });
         });
     }
   }
@@ -89,6 +110,15 @@
     }
 
     dynamicModal = createApp(LayerModal);
+    dynamicModalInstance = dynamicModal.mount(dynamicContainer.value);
+  }
+
+  function renderPublishModal() {
+    if(dynamicModal) {
+      dynamicModal.unmount();
+    }
+
+    dynamicModal = createApp(PublishModal);
     dynamicModalInstance = dynamicModal.mount(dynamicContainer.value);
   }
 
@@ -113,7 +143,9 @@
   }
 
   function publish(item) {
-    publishModalRef.value?.openModal(item);
+    renderPublishModal()
+
+    dynamicModalInstance?.openModal(item);
   }
 </script>
 
@@ -192,9 +224,9 @@
       ref="deleteModalRef" 
       @confirmed="deleteRecord" 
     />
-    <PublishModal 
+    <!-- <PublishModal 
       ref="publishModalRef"
-    />
+    /> -->
     <!-- <LayerModal 
       ref="layerModalRef"
     /> -->
