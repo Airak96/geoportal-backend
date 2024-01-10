@@ -21,6 +21,7 @@
     }
   });
   const loaded = ref(false);
+  const show = ref(false);
   const categoriesStore = useCategoriesStore();
   const geoserverStore = useGeoserverStore();
 
@@ -41,9 +42,6 @@
 
   function toggleLegend(layer, show) {
     if(show) {
-      // if(!layer.loaded)
-      //   layer.loaded = true;
-
       if(layer.type === 'shapes') {
         if(!layer.legends?.layerName) {
           geoserverStore.legends(layer.external_id)
@@ -100,39 +98,54 @@
       })
       .catch(error => console.log(error));
   }
+
+  if(props.lvl > 1) {
+    loadData();
+  }
 </script>
 <template>
   <fieldset class="pl-5 mt-2" v-if="item.status">
     <legend class="w-full">
-      <button type="button" class="flex gap-x-3 -ml-5 w-full items-center justify-between px-2 text-gray-400 hover:text-gray-500" aria-controls="filter-section-0" aria-expanded="false">
-        <span>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
-            <path d="M19.906 9c.382 0 .749.057 1.094.162V9a3 3 0 00-3-3h-3.879a.75.75 0 01-.53-.22L11.47 3.66A2.25 2.25 0 009.879 3H6a3 3 0 00-3 3v3.162A3.756 3.756 0 014.094 9h15.812zM4.094 10.5a2.25 2.25 0 00-2.227 2.568l.857 6A2.25 2.25 0 004.951 21H19.05a2.25 2.25 0 002.227-1.932l.857-6a2.25 2.25 0 00-2.227-2.568H4.094z" />
+      <button @click="show = !show" type="button" class="flex gap-x-3 -ml-5 w-full items-center justify-between px-2 pb-1 text-gray-400 hover:text-gray-500 border-b border-gray-200" aria-controls="filter-section-0" aria-expanded="false">
+        <span v-if="!show">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+            <path d="M19.5 21a3 3 0 0 0 3-3v-4.5a3 3 0 0 0-3-3h-15a3 3 0 0 0-3 3V18a3 3 0 0 0 3 3h15ZM1.5 10.146V6a3 3 0 0 1 3-3h5.379a2.25 2.25 0 0 1 1.59.659l2.122 2.121c.14.141.331.22.53.22H19.5a3 3 0 0 1 3 3v1.146A4.483 4.483 0 0 0 19.5 9h-15a4.483 4.483 0 0 0-3 1.146Z" />
           </svg>
         </span>
-        <span class="text-base font-medium text-gray-600 flex-grow text-left">{{ item.name }}</span>
-        <span v-if="lvl > 1 && !loaded" class="flex items-end"><button @click="loadData()" type="button" class="text-sm">(Mostrar)</button></span>
+        <span v-if="show">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+            <path d="M19.906 9c.382 0 .749.057 1.094.162V9a3 3 0 0 0-3-3h-3.879a.75.75 0 0 1-.53-.22L11.47 3.66A2.25 2.25 0 0 0 9.879 3H6a3 3 0 0 0-3 3v3.162A3.756 3.756 0 0 1 4.094 9h15.812ZM4.094 10.5a2.25 2.25 0 0 0-2.227 2.568l.857 6A2.25 2.25 0 0 0 4.951 21H19.05a2.25 2.25 0 0 0 2.227-1.932l.857-6a2.25 2.25 0 0 0-2.227-2.568H4.094Z" />
+          </svg>
+        </span>
+        <div class="flex-1">
+          <p class="text-sm font-medium text-gray-600 flex-grow text-left leading-5">{{ item.name }}</p>
+        </div>
+        <!-- <span v-if="lvl > 1 && !loaded" class="flex items-end"><button @click="loadData()" type="button" class="text-sm">(Mostrar)</button></span> -->
       </button>
     </legend>
-    <div class="px-4 pb-2 pt-2" id="filter-section-0">
-      <div class="space-y-3">
-        <template v-for="option in item.layers">
-          <div class="flex items-center" v-if="option.status && option.published">
-            <input id="color-0-mobile" :name="option.ref" v-model="option.show" @change="toggleLegend(option, option.show)" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-            <label for="color-0-mobile" class="ml-3 text-sm text-gray-500">{{ option.name }}</label>
-            <span class="ml-3">
-              <a href="javascript:void(0)" class="text-gray-600" @click="download(option.filepath, option.name)">
-                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                </svg>
-              </a>
-            </span>
-          </div>
-        </template>
-      </div>
-    </div>
+    <template v-if="show && item.layers?.length">
+      <div class="px-4 py-2">
+        <div class="space-y-1">
+          <template v-for="option in item.layers">
+            <template v-if="option.status && option.published">
+              <div class="flex items-center">
+                <input id="color-0-mobile" :name="option.ref" v-model="option.show" @change="toggleLegend(option, option.show)" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                <label for="color-0-mobile" class="ml-3 text-sm text-gray-500">{{ option.name }}</label>
+                <span class="ml-3">
+                  <a href="javascript:void(0)" class="text-gray-600" @click="download(option.filepath, option.name)">
+                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                    </svg>
+                  </a>
+                </span>
+              </div>
+            </template>
+          </template>
+        </div>
+      </div>      
+    </template>
     <MenuItem
-      v-if="item.categories?.length && item.categories.length > 0"
+      v-if="show && item.categories?.length && item.categories.length > 0"
       v-for="category in item.categories"
       :item="category"
       :lvl="lvl + 1"

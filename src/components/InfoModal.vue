@@ -88,7 +88,7 @@ defineExpose({
                 <div class="mt-6 border-t border-gray-100">
                   <dl class="divide-y divide-gray-100">
                     <template v-for="(value, key) in data">
-                      <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0" :key="key" v-if="key !== 'geometry' && value !== null">
+                      <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0" :key="key" v-if="key !== 'geometry' && value !== null">
                         <dt class="text-sm font-medium leading-6 text-gray-900">{{ key }}</dt>
                         <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ value }}</dd>
                       </div>
