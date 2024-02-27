@@ -10,9 +10,11 @@ import AdminLayout from '../layouts/AdminLayout.vue'
 
 // Views
 import LoginView from '../views/auth/LoginView.vue'
+import SignUpView from '../views/auth/SignUpView.vue'
 import HomeView from '../views/HomeView.vue'
 import CategoryListView from '../views/categories/ListView.vue'
 import UsersView from '../views/users/UsersView.vue'
+import VisitsView from '../views/visits/VisitsView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -39,6 +41,16 @@ const router = createRouter({
       ],
     },
     {
+      path: '/signup',
+      component: AuthLayout,
+      children: [
+        {
+          path: '',
+          component: SignUpView,
+        },
+      ],
+    },
+    {
       path: '/admin',
       component: AdminLayout,
       children: [
@@ -49,6 +61,10 @@ const router = createRouter({
         {
           path: 'users',
           component: UsersView
+        },
+        {
+          path: 'visitors',
+          component: VisitsView
         }
       ],
     },
@@ -58,13 +74,17 @@ const router = createRouter({
 
 router.beforeEach(async (to) => {
   // redirect to login page if not logged in and trying to access a restricted page
-  const publicPages = ['/','/login'];
+  const publicPages = ['/','/login','/signup'];
   const authRequired = !publicPages.includes(to.path);
   const auth = useAuthStore();
 
   if (authRequired && !auth.user) {
     auth.returnUrl = to.fullPath;
     return '/login';
+  }
+
+  if(authRequired && auth?.user?.data?.role == 'visitor') {
+    return '/';
   }
 });
 

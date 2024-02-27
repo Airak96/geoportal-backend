@@ -1,11 +1,17 @@
 <script setup>
   // vue imports
   import { ref } from 'vue';
+  import { storeToRefs } from 'pinia'
 
   import { useCategoriesStore } from '../stores/categories.store';
   import { useLayersStore } from '../stores/layers.store';
   import { useGeoserverStore } from '../stores/geoserver.store';
+  import { useAuthStore } from '../stores/auth.store';
+  import { notify } from "@kyvg/vue3-notification";
+
   import MenuItem from "./MenuItem.vue";
+  
+  import router from '../router/index';
 
   const props = defineProps({
     item: {
@@ -24,6 +30,8 @@
   const show = ref(false);
   const categoriesStore = useCategoriesStore();
   const geoserverStore = useGeoserverStore();
+  const authStore = useAuthStore();
+  const { user } = storeToRefs(authStore);
 
   function loadData() {
     categoriesStore.get(props.item?.external_id)
@@ -81,22 +89,38 @@
   }
 
   function download(path, name) {
-    let layersStore = useLayersStore();
-    layersStore.download(path)
-      .then(res => {
-        let file_name = name+"."+path.split(".")[1];
-        file_name = file_name.replace(/ /g, '_');
+    if(user?.value?.data?.role === 'visitor' || user?.value?.data?.role === 'admin' || user?.value?.data?.role === 'user') {
+      notify({
+        text: 'Descargando archivo...',
+        type: '!text-base !bg-blue-600 !border-blue-900',
+      });
+      let layersStore = useLayersStore();
+      layersStore.download(path)
+        .then(res => {
+          let file_name = name+"."+path.split(".")[1];
+          file_name = file_name.replace(/ /g, '_');
 
-        const url = window.URL.createObjectURL(new Blob([res.data]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', file_name);
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-        console.log('Archivo descargado!');
-      })
-      .catch(error => console.log(error));
+          const url = window.URL.createObjectURL(new Blob([res.data]));
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', file_name);
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          console.log('Archivo descargado!');
+          notify({
+            text: 'Archivo descargado!',
+            type: '!text-base !bg-green-600 !border-green-900',
+          });
+        })
+        .catch(error => console.log(error));
+    } else {
+      notify({
+        text: 'Inicia sesión para descargar el archivo',
+        type: '!text-base !bg-red-500 !border-red-800',
+      });
+      authStore.logout();
+    }
   }
 
   if(props.lvl > 1) {

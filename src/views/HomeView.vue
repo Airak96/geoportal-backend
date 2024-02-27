@@ -7,10 +7,25 @@
 
   // store imports
   import { useCategoriesStore } from '../stores/categories.store'
+  import { useVisitStore } from '../stores/visits.store';
 
   const categoriesStore = useCategoriesStore();
+  const visitStore = useVisitStore();
   const data = ref([]);
   const selected = ref([]);
+
+  const registerVisit = () => {
+    let visit = JSON.parse(sessionStorage.getItem('visit'));
+    if(!visit?.registered) {
+      visitStore.register()
+        .then(res => {
+          sessionStorage.setItem('visit', JSON.stringify({ registered: true }))
+        })
+        .catch(error => console.log(error));
+    }
+  }
+
+  registerVisit();
 
   categoriesStore.getAllData()
     .then(res => {
@@ -64,10 +79,10 @@
           if(url) {
             fetch(url)
               .then(res => {
+                console.log('DATOS: ', res);
                 return res.json();
               })
               .then(data => {
-                // console.log("DATOS =>", data.features[0]?.properties);
                 if(data && data.features?.length) {
                   childComponentRef.value?.openModal(data.features[0]?.properties)
                 } else {

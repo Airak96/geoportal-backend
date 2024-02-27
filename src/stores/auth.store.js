@@ -27,8 +27,15 @@ export const useAuthStore = defineStore({
         type: '!text-base !bg-green-600 !border-green-900',
       });
 
-      // redirect to previous url or default to home page
-      router.push(this.returnUrl || '/admin');
+      if(this.user?.data?.role == 'admin' || this.user?.data?.role == 'user') {
+        // redirect to previous url or default to home page
+        router.push(this.returnUrl || '/admin');
+      } else {
+        router.push('/');
+      }
+    },
+    signup(data) {      
+      return fetchWrapper.post(`${baseUrl}/signup`, data);
     },
     logout() {
       this.user = null;

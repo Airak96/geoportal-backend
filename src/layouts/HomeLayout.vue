@@ -1,5 +1,14 @@
 <script setup>
+  import { storeToRefs } from 'pinia'
   import { RouterView, RouterLink } from 'vue-router'
+  import { useAuthStore } from '../stores/auth.store'
+
+  const authStore = useAuthStore();
+  const { user } = storeToRefs(authStore);
+
+  const logout = () => {
+    authStore.logout();
+  }
 </script>
 <template>
   <div class="h-full">
@@ -13,12 +22,13 @@
         </div>
         <div class="hidden lg:flex lg:flex-1 lg:justify-end items-center gap-x-4">
           <a href="https://proyecto-cuidar.com/" class="text-base font-semibold leading-6 text-white hover:text-[#41f2e6]">Página principal</a>
-          <RouterLink to="/admin" class="text-base font-semibold leading-6 text-white flex items-center gap-1 hover:text-[#41f2e6] mr-7">
+          <RouterLink v-if="!user || user?.data?.role !== 'visitor'" to="/admin" class="text-base font-semibold leading-6 text-white flex items-center gap-1 hover:text-[#41f2e6] mr-7">
             Ingreso 
             <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
             </svg>
           </RouterLink>
+          <button v-else @click="logout()" type="button" class="text-base font-semibold leading-6 text-white flex items-center gap-1 hover:text-[#41f2e6] mr-7">Cerrar sesión</button>
           <a href="https://www.facebook.com/" class="text-base font-semibold leading-6 text-white hover:opacity-70">
             <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0,0,256,256">
               <g fill="#ffffff" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><g transform="scale(5.12,5.12)"><path d="M32,11h5c0.552,0 1,-0.448 1,-1v-6.737c0,-0.524 -0.403,-0.96 -0.925,-0.997c-1.591,-0.113 -4.699,-0.266 -6.934,-0.266c-6.141,0 -10.141,3.68 -10.141,10.368v6.632h-7c-0.552,0 -1,0.448 -1,1v7c0,0.552 0.448,1 1,1h7v19c0,0.552 0.448,1 1,1h7c0.552,0 1,-0.448 1,-1v-19h7.222c0.51,0 0.938,-0.383 0.994,-0.89l0.778,-7c0.066,-0.592 -0.398,-1.11 -0.994,-1.11h-8v-5c0,-1.657 1.343,-3 3,-3z"></path></g></g>
