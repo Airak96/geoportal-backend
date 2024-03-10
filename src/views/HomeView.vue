@@ -17,11 +17,15 @@
   const registerVisit = () => {
     let visit = JSON.parse(sessionStorage.getItem('visit'));
     if(!visit?.registered) {
-      visitStore.register()
+      visitStore.getip()
         .then(res => {
-          sessionStorage.setItem('visit', JSON.stringify({ registered: true }))
-        })
-        .catch(error => console.log(error));
+          let ip = res.data.ip;
+          visitStore.register(ip)
+            .then(res => {
+              sessionStorage.setItem('visit', JSON.stringify({ registered: true }))
+            })
+            .catch(error => console.log(error));
+        }).catch(error => console.log(error));
     }
   }
 

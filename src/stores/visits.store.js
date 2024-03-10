@@ -9,8 +9,11 @@ export const useVisitStore = defineStore({
     visits: {}
   }),
   actions: {
-    register() {
-      return fetchWrapper.post(`${baseUrl}/register`, null)
+    getip() {
+      return fetchWrapper.get(`https://api6.ipify.org/?format=json`)
+    },
+    register(ip) {
+      return fetchWrapper.post(`${baseUrl}/register`, { ip_address: ip })
     },
     unique() {
       return fetchWrapper.get(`${baseUrl}/counter/unique`);
