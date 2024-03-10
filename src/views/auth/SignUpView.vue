@@ -10,21 +10,29 @@
   const authStore = useAuthStore();
 
   const schema = Yup.object().shape({
-    name: Yup.string().required('El email es requerido'),
-    email: Yup.string().required('El email es requerido'),
+    firstname: Yup.string().required('El nombre es requerido'),
+    lastname: Yup.string().required('El apellido es requerido'),
+    email: Yup.string().email().required('El email es requerido'),
+    country: Yup.string().required('El país es requerido'),
+    institution: Yup.string().required('La institución es requerida'),
     password: Yup.string().required('La contraseña es requerida')
   });
 
   function onSubmit(values, { setErrors }) {
     const { 
-      name,
+      firstname,
+      lastname,
       email,
+      country,
+      institution,
       password,
     } = values;
 
     let body = {
-      name: name,
+      name: firstname+' '+lastname,
       email: email,
+      country: country,
+      institution: institution,
       password: password,
       updated_at: new Date(),
     }
@@ -78,18 +86,37 @@
         ></div>
         <fieldset :disabled="isSubmitting">
           <div>
-            <label for="email-address" class="sr-only">Nombres completos</label>
+            <label for="first-name" class="sr-only">Nombres</label>
             <div class="relative rounded-md shadow-sm">
               <Field
-                id="full-name"
-                name="name"
+                id="first-name"
+                name="firstname"
                 type="text"
                 required
                 class="relative block w-full rounded-t-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-100 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
-                placeholder="Nombres completos"
+                placeholder="Nombres"
                 :validateOnBlur="false" :validateOnChange="false" :validateOnInput="false"
               />
-              <div v-show="errors.name" class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+              <div v-show="errors.firstname" class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                <svg class="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div>
+            <label for="last-name" class="sr-only">Apellidos</label>
+            <div class="relative rounded-md shadow-sm">
+              <Field
+                id="last-name"
+                name="lastname"
+                type="text"
+                required
+                class="relative block w-full rounded-t-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-100 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+                placeholder="Apellidos"
+                :validateOnBlur="false" :validateOnChange="false" :validateOnInput="false"
+              />
+              <div v-show="errors.lastname" class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
                 <svg class="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                   <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
                 </svg>
@@ -110,6 +137,44 @@
                 :validateOnBlur="false" :validateOnChange="false" :validateOnInput="false"
               />
               <div v-show="errors.email" class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                <svg class="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div>
+            <label for="country" class="sr-only">País</label>
+            <div class="relative rounded-md shadow-sm">
+              <Field
+                id="country"
+                name="country"
+                type="text"
+                required
+                class="relative block w-full rounded-t-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-100 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+                placeholder="País"
+                :validateOnBlur="false" :validateOnChange="false" :validateOnInput="false"
+              />
+              <div v-show="errors.country" class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                <svg class="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div>
+            <label for="institution" class="sr-only">País</label>
+            <div class="relative rounded-md shadow-sm">
+              <Field
+                id="institution"
+                name="institution"
+                type="text"
+                required
+                class="relative block w-full rounded-t-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-100 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+                placeholder="Institución"
+                :validateOnBlur="false" :validateOnChange="false" :validateOnInput="false"
+              />
+              <div v-show="errors.institution" class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
                 <svg class="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                   <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
                 </svg>

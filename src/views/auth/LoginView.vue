@@ -113,5 +113,11 @@
         </button>
       </div>
     </Form>
+    <div class="text-sm text-center font-semibold mt-5 text-gray-600">
+      ¿No tienes una cuenta? 
+      <RouterLink to="/signup" class="text-blue-600">
+        Regístrate
+      </RouterLink>
+    </div>
   </div>
 </template>
