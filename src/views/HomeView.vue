@@ -101,8 +101,6 @@
       }
     }
   }
-
-
 </script>
 <template>
   <div class="grid grid-cols-5 gap-3 h-full">
@@ -141,45 +139,59 @@
           <div class="px-5 pt-2 pb-5 overflow-y-auto max-h-[350px]">
             <template v-if="selected?.length && selected.length > 0">
               <template v-for="obj in selected">
-                <p class="ml-4 mt-4 font-bold text-xs uppercase">{{ obj.localName }}</p>
-                <template v-if="obj.localType === 'shapes'">
-                  <template v-for="legend in obj.rules">
-                    <div v-if="legend.ElseFilter !== 'true'" class="grid grid-cols-12 items-center gap-3 pl-4 mt-3">
-                      <template v-if="legend.symbolizers[0]?.Polygon">
-                        <div class="col-span-2">
-                          <div class="w-[20px] h-4" :style="{ backgroundColor: legend.symbolizers[0]?.Polygon?.fill }"></div>
-                        </div>
-                        <div class="col-span-10">
-                          <p class="text-xs text-gray-500">{{ legend.name }}</p> 
-                        </div>                       
-                      </template>
-                      <template v-if="legend.symbolizers[0]?.Point">
-                        <div class="col-span-2">
-                          <div class="w-[20px] h-4" :style="{ backgroundColor: legend.symbolizers[0]?.Point?.graphics[0]?.fill }"></div>
-                        </div>
-                        <div class="col-span-10">
-                          <p class="text-xs text-gray-500">{{ legend.name }}</p> 
-                        </div>
-                      </template>
-                      <template v-if="legend.symbolizers[0]?.Line">
-                        <div class="col-span-2">
-                          <div class="w-[20px] h-4" :style="{ backgroundColor: legend.symbolizers[0]?.Line?.stroke }"></div>
-                        </div>
-                        <div class="col-span-10">
-                          <p class="text-xs text-gray-500">{{ legend.name }}</p> 
-                        </div>
-                      </template>
-                    </div>
+                <div class="ml-4 mt-4 mb-2">
+                  <div class="flex w-full items-center">
+                    <span class="flex-1 font-bold text-xs uppercase">{{ obj.localName }}</span>
+                    <button type="button" class="outline-none p-1.5 bg-slate-100 rounded-md" @click="obj.show = !obj.show">
+                      <svg v-if="obj.show" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5" />
+                      </svg>
+                      <svg v-if="!obj.show" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+                <template v-if="obj.show">
+                  <template v-if="obj.localType === 'shapes'">
+                    <template v-for="legend in obj.rules">
+                      <div v-if="legend.ElseFilter !== 'true'" class="grid grid-cols-12 items-center gap-3 pl-4 mt-3">
+                        <template v-if="legend.symbolizers[0]?.Polygon">
+                          <div class="col-span-2">
+                            <div class="w-[20px] h-4" :style="{ backgroundColor: legend.symbolizers[0]?.Polygon?.fill }"></div>
+                          </div>
+                          <div class="col-span-10">
+                            <p class="text-xs text-gray-500">{{ legend.name }}</p> 
+                          </div>                       
+                        </template>
+                        <template v-if="legend.symbolizers[0]?.Point">
+                          <div class="col-span-2">
+                            <div class="w-[20px] h-4" :style="{ backgroundColor: legend.symbolizers[0]?.Point?.graphics[0]?.fill }"></div>
+                          </div>
+                          <div class="col-span-10">
+                            <p class="text-xs text-gray-500">{{ legend.name }}</p> 
+                          </div>
+                        </template>
+                        <template v-if="legend.symbolizers[0]?.Line">
+                          <div class="col-span-2">
+                            <div class="w-[20px] h-4" :style="{ backgroundColor: legend.symbolizers[0]?.Line?.stroke }"></div>
+                          </div>
+                          <div class="col-span-10">
+                            <p class="text-xs text-gray-500">{{ legend.name }}</p> 
+                          </div>
+                        </template>
+                      </div>
+                    </template>
                   </template>
-                </template>
-                <template v-else-if="obj.localType === 'raster'">
-                  <template v-for="legend in obj.rules">
-                    <div class="flex items-center gap-3 pl-4 mt-2">
-                      <div class="w-[20px] h-4" :style="{ backgroundColor: legend.color }"></div>
-                      <div class="text-xs text-gray-500">{{ legend.description?.toUpperCase() }}</div>
-                    </div>
-                  </template>
-                </template>      
+                  <template v-else-if="obj.localType === 'raster'">
+                    <template v-for="legend in obj.rules">
+                      <div class="flex items-center gap-3 pl-4 mt-2">
+                        <div class="w-[20px] h-4" :style="{ backgroundColor: legend.color }"></div>
+                        <div class="text-xs text-gray-500">{{ legend.description?.toUpperCase() }}</div>
+                      </div>
+                    </template>
+                  </template> 
+                </template>     
               </template>             
             </template>
 

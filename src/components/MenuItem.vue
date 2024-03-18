@@ -59,6 +59,7 @@
                 let obj = geoLegend[0];
                 obj.localName = layer.name;
                 obj.localType = layer.type;
+                obj.show = true;
                 layer.legends = obj;
                 props.legends.push(obj);
               }
@@ -75,6 +76,7 @@
             localName: layer.name,
             localType: layer.type,
             layerName: layer.external_id,
+            show: true,
           }
 
           props.legends.push(obj);

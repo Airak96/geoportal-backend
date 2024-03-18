@@ -2,22 +2,35 @@
   import { storeToRefs } from 'pinia'
   import { RouterView, RouterLink } from 'vue-router'
   import { useAuthStore } from '../stores/auth.store'
+import { ref } from 'vue';
 
   const authStore = useAuthStore();
   const { user } = storeToRefs(authStore);
-
+  const bottom = ref(false);
   const logout = () => {
     authStore.logout();
+  }
+
+  const scroll = (bot) => {
+    if(!bot) {
+      window.scrollTo(0, document.body.scrollHeight);
+    } else {
+      window.scrollTo(0, 0);
+    }
   }
 </script>
 <template>
   <div class="h-full">
     <header class="bg-[#0075C9] px- py-3 absolute left-0 right-0 top-0 z-10">
       <nav class="mx-auto flex max-w-7xl items-center justify-between">
-        <div class="flex lg:flex-1">
+        <div class="flex lg:flex-1 items-center gap-x-8">
           <RouterLink to="/" class="-m-1.5 p-1.5">
             <span class="sr-only">Proyecto Cuidar</span>
             <img class="h-20 w-auto" src="/src/assets/main_logo.svg" alt="">
+          </RouterLink>
+          <RouterLink to="https://unl.edu.ec/" class="-m-1.5 p-1.5">
+            <span class="sr-only">UNL</span>
+            <img class="h-16 w-auto" src="/src/assets/cis_2.png" alt="">
           </RouterLink>
         </div>
         <div class="hidden lg:flex lg:flex-1 lg:justify-end items-center gap-x-4">
@@ -48,5 +61,53 @@
         <RouterView />
       </div>
     </main>
+
+    <footer class="relative bg-slate-800 py-10">
+      <button @click="scroll(bottom); bottom = !bottom" type="button" class="bg-slate-800 text-white font-semibold uppercase flex items-center gap-2 absolute top-[-56px] rounded-tl-md rounded-tr-md right-10 py-4 px-8" >
+        <svg v-if="!bottom" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3" />
+        </svg>
+        <svg v-if="bottom" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18" />
+        </svg>
+        {{ bottom ? 'Regresar al mapa':'Ver créditos' }}
+      </button>
+      <div class="max-w-7xl mx-auto">
+        <div class="grid grid-cols-2">
+          <div class="">
+            <h2 class="font-bold text-white text-lg mb-5">Entidades colaboradoras:</h2>
+            <div class="flex lg:flex-1 items-center gap-x-8">
+              <RouterLink to="/" class="-m-1.5 p-1.5">
+                <span class="sr-only">Proyecto Cuidar</span>
+                <img class="h-14 w-auto" src="/src/assets/main_logo.svg" alt="">
+              </RouterLink>
+              <RouterLink to="https://unl.edu.ec/" class="-m-1.5 p-1.5">
+                <span class="sr-only">UNL</span>
+                <img class="h-14 w-auto" src="/src/assets/cis_2.png" alt="">
+              </RouterLink>
+            </div>
+          </div>
+          <div class="grid grid-cols-2">
+            <div>
+              <div class="mb-5">
+                <h3 class="font-bold text-white text-sm mb-2">Propietario:</h3>
+                <p class="text-slate-300 text-sm">Juan A. Maita Chamba, M. Sc.</p>
+              </div>
+              <div>
+                <h3 class="font-bold text-white text-sm mb-2">Tutor:</h3>
+                <p class="text-slate-300 text-sm">Wilman P Chamba Zaragocín, M. Sc.</p>
+              </div>
+            </div>
+            <div>            
+              <div class="mb-5">
+                <h3 class="font-bold text-white text-sm mb-2">Autores / Desarrolladores:</h3>
+                <p class="text-slate-300 text-sm mb-1">Roberth F. Carrión Vega</p>
+                <p class="text-slate-300 text-sm">Alberto A. Ortega Puchaicela</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
   </div>  
 </template>
