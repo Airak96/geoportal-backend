@@ -1,5 +1,6 @@
 <script setup>
 import { notify } from "@kyvg/vue3-notification";
+import Editor from 'primevue/editor';
 
 // vue imports
 import { reactive, ref, toRefs } from "vue";
@@ -25,6 +26,8 @@ const state = reactive({
 });
 const { legends } = toRefs(state);
 
+const description = ref(null);
+
 const schema = Yup.object().shape({
   external: Yup.string(),
   name: Yup.string().required("El nombre es requerido"),
@@ -42,7 +45,8 @@ const openModal = (item, type, parent) => {
   if(item) {
     form.value.setFieldValue('name', item.name);
     form.value.setFieldValue('type', item.type);
-    form.value.setFieldValue('description', item.description || '');
+    // form.value.setFieldValue('description', item.description || '');
+    description.value = item.description;
     form.value.setFieldValue('external', item.external_id);
 
     if(item.type === 'raster') {
@@ -71,6 +75,8 @@ const openModal = (item, type, parent) => {
 const closeModal = (reset) => {
   if(reset)
     reset();
+
+  description.value = null;
   showModal.value = false;
   setTimeout(() => {
     hidden.value = true;
@@ -134,7 +140,7 @@ function onSubmit(values, { setErrors, resetForm }) {
     type,
     file,
     styles,
-    description,
+    // description,
   } = values;
 
   let body = {
@@ -145,8 +151,8 @@ function onSubmit(values, { setErrors, resetForm }) {
     updated_at: new Date(),
   }
 
-  if(description)
-    body.description = description;
+  if(description.value)
+    body.description = description.value;
 
   if(parentRef.value)
     body.category_id = parentRef.value.id_category;
@@ -460,6 +466,14 @@ defineExpose({
                           </button>
                         </div>
                       </template>
+
+                      <div class="col-span-full">
+                        <label
+                          class="block text-sm font-medium leading-6 text-gray-900"
+                          >Información</label
+                        >
+                        <Editor v-model="description" editorStyle="height: 220px" />
+                      </div>
                     </div>
                   </fieldset>
                 </div>

@@ -90,7 +90,7 @@ import { ref } from 'vue';
           <div class="grid grid-cols-2">
             <div>
               <div class="mb-5">
-                <h3 class="font-bold text-white text-sm mb-2">Propietario:</h3>
+                <h3 class="font-bold text-white text-sm mb-2">Director:</h3>
                 <p class="text-slate-300 text-sm">Juan A. Maita Chamba, M. Sc.</p>
               </div>
               <div>

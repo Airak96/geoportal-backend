@@ -129,7 +129,7 @@
         </div>
       </div>
 
-      <div class="absolute top-8 right-10 z-10 w-[320px]">
+      <div class="absolute top-8 right-10 z-[1] w-[320px]">
         <div class="bg-white rounded-lg shadow-md overflow-hidden">
           <div class="w-full bg-[#dff1ff] px-5">
             <div class="flex w-full items-center justify-between py-2 text-black/80">
@@ -140,8 +140,13 @@
             <template v-if="selected?.length && selected.length > 0">
               <template v-for="obj in selected">
                 <div class="ml-4 mt-4 mb-2">
-                  <div class="flex w-full items-center">
+                  <div class="flex w-full items-center gap-x-2">
                     <span class="flex-1 font-bold text-xs uppercase">{{ obj.localName }}</span>
+                    <!-- <button v-if="obj.description?.trim()" type="button" class="outline-none p-1.5 bg-slate-100 rounded-md" @click="openInfoModal(obj.description)">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+                      </svg>
+                    </button> -->
                     <button type="button" class="outline-none p-1.5 bg-slate-100 rounded-md" @click="obj.show = !obj.show">
                       <svg v-if="obj.show" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5" />

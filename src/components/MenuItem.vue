@@ -8,6 +8,7 @@
   import { useGeoserverStore } from '../stores/geoserver.store';
   import { useAuthStore } from '../stores/auth.store';
   import { notify } from "@kyvg/vue3-notification";
+  import DescModal from './DescriptionModal.vue';
 
   import MenuItem from "./MenuItem.vue";
   
@@ -32,6 +33,7 @@
   const geoserverStore = useGeoserverStore();
   const authStore = useAuthStore();
   const { user } = storeToRefs(authStore);
+  const descModalRef = ref(null);
 
   function loadData() {
     categoriesStore.get(props.item?.external_id)
@@ -60,6 +62,7 @@
                 obj.localName = layer.name;
                 obj.localType = layer.type;
                 obj.show = true;
+                obj.description = layer.description;
                 layer.legends = obj;
                 props.legends.push(obj);
               }
@@ -77,6 +80,7 @@
             localType: layer.type,
             layerName: layer.external_id,
             show: true,
+            description: layer.description,
           }
 
           props.legends.push(obj);
@@ -128,6 +132,10 @@
   if(props.lvl > 1) {
     loadData();
   }
+
+  const openInfoModal = (info) => {
+    descModalRef.value?.openModal(info);
+  }
 </script>
 <template>
   <fieldset class="pl-5 mt-2" v-if="item.status">
@@ -150,15 +158,20 @@
       </button>
     </legend>
     <template v-if="show && item.layers?.length">
-      <div class="px-4 py-2">
+      <div class="pl-2 pr-4 py-2">
         <div class="space-y-1">
           <template v-for="option in item.layers">
             <template v-if="option.status && option.published">
-              <div class="flex items-center">
+              <div class="flex items-center w-full gap-x-2">
                 <input id="color-0-mobile" :name="option.ref" v-model="option.show" @change="toggleLegend(option, option.show)" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                <label for="color-0-mobile" class="ml-3 text-sm text-gray-500">{{ option.name }}</label>
-                <span class="ml-3">
-                  <a href="javascript:void(0)" class="text-gray-600" @click="download(option.filepath, option.name)">
+                <label for="color-0-mobile" class="text-sm text-gray-500 flex-1">{{ option.name }}</label>
+                <button type="button" class="outline-none p-1 bg-slate-100 rounded-md text-gray-800" @click="openInfoModal(option.description)">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+                  </svg>
+                </button>
+                <span>
+                  <a href="javascript:void(0)" class="outline-none block p-1 bg-slate-100 rounded-md text-gray-800" @click="download(option.filepath, option.name)">
                     <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
                     </svg>
@@ -178,4 +191,5 @@
       :legends="legends"
     />
   </fieldset>
+  <DescModal ref="descModalRef" />
 </template>
