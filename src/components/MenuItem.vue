@@ -52,39 +52,25 @@
 
   function toggleLegend(layer, show) {
     if(show) {
-      if(layer.type === 'shapes') {
-        if(!layer.legends?.layerName) {
-          geoserverStore.legends(layer.external_id)
-            .then(res => {
-              let geoLegend = res.data?.Legend;
-              if(geoLegend && geoLegend?.length) {
-                let obj = geoLegend[0];
-                obj.localName = layer.name;
-                obj.localType = layer.type;
-                obj.show = true;
-                obj.description = layer.description;
-                layer.legends = obj;
-                props.legends.push(obj);
-              }
-            }).catch(err => {
-              console.log(err);
-            });
-        } else {
-          props.legends.push(layer.legends);
-        }
+      if(!layer.legends?.layerName) {
+        geoserverStore.legends(layer.external_id)
+          .then(res => {
+            console.log(res.data)
+            let geoLegend = res.data?.Legend;
+            if(geoLegend && geoLegend?.length) {
+              let obj = geoLegend[0];
+              obj.localName = layer.name;
+              obj.localType = layer.type;
+              obj.show = true;
+              obj.description = layer.description;
+              layer.legends = obj;
+              props.legends.push(obj);
+            }
+          }).catch(err => {
+            console.log(err);
+          });
       } else {
-        if(layer.legends?.length) {
-          let obj = {
-            rules: layer.legends,
-            localName: layer.name,
-            localType: layer.type,
-            layerName: layer.external_id,
-            show: true,
-            description: layer.description,
-          }
-
-          props.legends.push(obj);
-        }
+        props.legends.push(layer.legends);
       }
     } else {
       let index = props.legends.findIndex(x => x.layerName === layer.external_id)

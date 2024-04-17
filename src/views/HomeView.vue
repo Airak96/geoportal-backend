@@ -158,44 +158,51 @@
                   </div>
                 </div>
                 <template v-if="obj.show">
-                  <template v-if="obj.localType === 'shapes'">
-                    <template v-for="legend in obj.rules">
-                      <div v-if="legend.ElseFilter !== 'true'" class="grid grid-cols-12 items-center gap-3 pl-4 mt-3">
-                        <template v-if="legend.symbolizers[0]?.Polygon">
-                          <div class="col-span-2">
-                            <div class="w-[20px] h-4" :style="{ backgroundColor: legend.symbolizers[0]?.Polygon?.fill }"></div>
-                          </div>
-                          <div class="col-span-10">
-                            <p class="text-xs text-gray-500">{{ legend.name }}</p> 
-                          </div>                       
+                  <template v-for="legend in obj.rules">
+                    <div v-if="legend.ElseFilter !== 'true'" class="grid grid-cols-12 items-center gap-3 pl-4 mt-3">
+                      <template v-if="legend.symbolizers[0]?.Polygon">
+                        <div class="col-span-2">
+                          <div class="w-[20px] h-4" :style="{ backgroundColor: legend.symbolizers[0]?.Polygon?.fill }"></div>
+                        </div>
+                        <div class="col-span-10">
+                          <p class="text-xs text-gray-500">{{ legend.name }}</p> 
+                        </div>                       
+                      </template>
+                      <template v-if="legend.symbolizers[0]?.Point">
+                        <div class="col-span-2">
+                          <div class="w-[20px] h-4" :style="{ backgroundColor: legend.symbolizers[0]?.Point?.graphics[0]?.fill }"></div>
+                        </div>
+                        <div class="col-span-10">
+                          <p class="text-xs text-gray-500">{{ legend.name }}</p> 
+                        </div>
+                      </template>
+                      <template v-if="legend.symbolizers[0]?.Line">
+                        <div class="col-span-2">
+                          <div class="w-[20px] h-4" :style="{ backgroundColor: legend.symbolizers[0]?.Line?.stroke }"></div>
+                        </div>
+                        <div class="col-span-10">
+                          <p class="text-xs text-gray-500">{{ legend.name }}</p> 
+                        </div>
+                      </template>
+                      <template v-if="legend.symbolizers[0]?.Raster">
+                        <template v-if="legend.symbolizers[0]?.Raster?.colormap">
+                          <template v-for="entry of legend.symbolizers[0]?.Raster?.colormap?.entries">
+                            <div class="col-span-2">
+                              <div class="w-[20px] h-4" :style="{ backgroundColor: entry?.color }"></div>
+                            </div>
+                            <div class="col-span-10">
+                              <p class="text-xs text-gray-500">{{ entry?.label }}</p> 
+                            </div>
+                          </template>
                         </template>
-                        <template v-if="legend.symbolizers[0]?.Point">
-                          <div class="col-span-2">
-                            <div class="w-[20px] h-4" :style="{ backgroundColor: legend.symbolizers[0]?.Point?.graphics[0]?.fill }"></div>
-                          </div>
+                        <template v-else>
                           <div class="col-span-10">
-                            <p class="text-xs text-gray-500">{{ legend.name }}</p> 
+                            <p class="text-xs text-gray-500">(Sin información o leyenda)</p> 
                           </div>
                         </template>
-                        <template v-if="legend.symbolizers[0]?.Line">
-                          <div class="col-span-2">
-                            <div class="w-[20px] h-4" :style="{ backgroundColor: legend.symbolizers[0]?.Line?.stroke }"></div>
-                          </div>
-                          <div class="col-span-10">
-                            <p class="text-xs text-gray-500">{{ legend.name }}</p> 
-                          </div>
-                        </template>
-                      </div>
-                    </template>
+                      </template>
+                    </div>
                   </template>
-                  <template v-else-if="obj.localType === 'raster'">
-                    <template v-for="legend in obj.rules">
-                      <div class="flex items-center gap-3 pl-4 mt-2">
-                        <div class="w-[20px] h-4" :style="{ backgroundColor: legend.color }"></div>
-                        <div class="text-xs text-gray-500">{{ legend.description?.toUpperCase() }}</div>
-                      </div>
-                    </template>
-                  </template> 
                 </template>     
               </template>             
             </template>

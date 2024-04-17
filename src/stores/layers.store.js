@@ -18,7 +18,7 @@ export const useLayersStore = defineStore({
     add(data, file, styles) {
       const formData = new FormData();
       formData.append('file', file);
-      if(styles && data.type === 'shapes') {
+      if(styles) {
         formData.append('styles', styles);
       }
       formData.append('fileProps', JSON.stringify(data));

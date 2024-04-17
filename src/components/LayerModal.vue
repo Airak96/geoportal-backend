@@ -362,7 +362,7 @@ defineExpose({
                         </ul>
                       </div>
 
-                      <div class="col-span-full" v-if="!object && values.type !== 'raster'">
+                      <div class="col-span-full" v-if="!object">
                         <label
                           for="layer_styles"
                           class="block text-sm font-medium leading-6 text-gray-900"
@@ -406,7 +406,7 @@ defineExpose({
                         </div>
                       </div>
 
-                      <template v-if="values.type === 'raster'">
+                      <template v-if="false">
                         <div class="col-span-full">
                           <hr class="mb-2" />
                           <p class="pl-2 block text-sm font-bold leading-6 text-gray-500 uppercase">Leyendas</p>

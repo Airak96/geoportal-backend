@@ -45,10 +45,32 @@ const publishLayer = () => {
         message.value = 'Publicando capa...'
         geoserverStore.createRasterLayer(layer.value.external_id)
           .then(res => {
-            executed.value = false;
-            completed.value = true;
             layer.value.published = true;
-            message.value = '¡Completado!';
+
+            if(layer.value.styles) {
+              message.value = 'Añadiendo estilos...';
+              geoserverStore.createStyles(layer.value.external_id)
+                .then(res => {
+                  executed.value = false;
+                  completed.value = true;
+                  message.value = '¡Completado!'             
+                }).catch(err => {
+                  console.log('Styles Error: ', err);
+                  message.value = 'Error añadir los estilos...'
+                  error.value = true;
+                  executed.value = false;
+
+                  notify({
+                    text: err?.response?.data?.message || 'Error al procesar la solicitud.',
+                    type: '!text-base !bg-red-500 !border-red-800',
+                  });
+                });
+            } else {
+              executed.value = false;
+              completed.value = true;
+              message.value = '¡Completado!'  
+            }
+
           }).catch(err => {
             console.log('Layer Error: ', err);
             message.value = 'Error al publicar la capa...'
@@ -79,24 +101,30 @@ const publishLayer = () => {
         geoserverStore.createShapeLayer(layer.value.external_id)
           .then(res => {
             layer.value.published = true;
-            message.value = 'Añadiendo estilos...';
             
-            geoserverStore.createStyles(layer.value.external_id)
-              .then(res => {
-                executed.value = false;
-                completed.value = true;
-                message.value = '¡Completado!'             
-              }).catch(err => {
-                console.log('Styles Error: ', err);
-                message.value = 'Error añadir los estilos...'
-                error.value = true;
-                executed.value = false;
+            if(layer.value.styles) {
+              message.value = 'Añadiendo estilos...';
+              geoserverStore.createStyles(layer.value.external_id)
+                .then(res => {
+                  executed.value = false;
+                  completed.value = true;
+                  message.value = '¡Completado!'             
+                }).catch(err => {
+                  console.log('Styles Error: ', err);
+                  message.value = 'Error añadir los estilos...'
+                  error.value = true;
+                  executed.value = false;
 
-                notify({
-                  text: err?.response?.data?.message || 'Error al procesar la solicitud.',
-                  type: '!text-base !bg-red-500 !border-red-800',
+                  notify({
+                    text: err?.response?.data?.message || 'Error al procesar la solicitud.',
+                    type: '!text-base !bg-red-500 !border-red-800',
+                  });
                 });
-              });
+            } else {
+              executed.value = false;
+              completed.value = true;
+              message.value = '¡Completado!' 
+            }
           }).catch(err => {
             console.log('Layer Error: ', err);
             message.value = 'Error al publicar la capa...'
