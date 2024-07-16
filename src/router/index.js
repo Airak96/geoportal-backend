@@ -11,6 +11,7 @@ import AdminLayout from '../layouts/AdminLayout.vue'
 // Views
 import LoginView from '../views/auth/LoginView.vue'
 import SignUpView from '../views/auth/SignUpView.vue'
+import RecoverView from '../views/auth/RecoverView.vue'
 import HomeView from '../views/HomeView.vue'
 import CategoryListView from '../views/categories/ListView.vue'
 import UsersView from '../views/users/UsersView.vue'
@@ -51,6 +52,16 @@ const router = createRouter({
       ],
     },
     {
+      path: '/recover',
+      component: AuthLayout,
+      children: [
+        {
+          path: '',
+          component: RecoverView,
+        },
+      ],
+    },
+    {
       path: '/admin',
       component: AdminLayout,
       children: [
@@ -74,7 +85,7 @@ const router = createRouter({
 
 router.beforeEach(async (to) => {
   // redirect to login page if not logged in and trying to access a restricted page
-  const publicPages = ['/','/login','/signup'];
+  const publicPages = ['/','/login','/signup','/recover'];
   const authRequired = !publicPages.includes(to.path);
   const auth = useAuthStore();
 

@@ -2,29 +2,46 @@
   import { Form, Field } from 'vee-validate';
   import * as Yup from 'yup';
   import { RouterLink } from 'vue-router'
-
+  
   import { useAuthStore } from '../../stores/auth.store';
+  import router from '../../router/index';
   import { notify } from "@kyvg/vue3-notification";
+import { ref } from 'vue';
 
+  const sended = ref(false);
+  const authStore = useAuthStore();
   const schema = Yup.object().shape({
-    email: Yup.string().required('El email es requerido'),
-    password: Yup.string().required('La contraseña es requerida')
+    email: Yup.string().email().required('El email es requerido'),
   });
 
   function onSubmit(values, { setErrors }) {
-    const authStore = useAuthStore();
-    const { email, password } = values;
+    const { 
+      email,
+    } = values;
 
-    return authStore.login(email, password)
-        .catch(error => {
-          setErrors({ apiError: error });
-          notify({
-            text: error?.response?.data?.message || 'Error al procesar la solicitud.',
-            type: '!text-base !bg-red-500 !border-red-800',
-          });
+    let body = {
+      email: email,
+    }
+
+    return authStore.recoverPassword(body)
+      .then(res => {
+        notify({
+          text: 'Acción completada correctamente. Revisa tu correo electrónico.',
+          type: '!text-base !bg-green-600 !border-green-900',
         });
+        // router.push('/login');
+        sended.value = true;
+      })
+      .catch(error => {
+        console.log(error);
+        notify({
+          text: error?.response?.data?.message || 'Error al procesar la solicitud.',
+          type: '!text-base !bg-red-500 !border-red-800',
+        });
+      });
   }
 </script>
+
 <template>
   <div>
     <RouterLink to="/">
@@ -35,10 +52,10 @@
     <h2
       class="text-center text-2xl font-bold leading-9 tracking-tight text-gray-900"
     >
-      Inicio de sesión
+      Recuperación de cuenta
     </h2>
     <Form @submit="onSubmit" :validation-schema="schema" v-slot="{ errors, isSubmitting }" class="space-y-6" method="POST">
-      <div v-show="errors.email || errors.password" class="rounded-md bg-red-50 p-4">
+      <div v-show="errors.name || errors.email || errors.password" class="rounded-md bg-red-50 p-4">
         <div class="flex">
           <div class="flex-shrink-0">
             <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -46,7 +63,7 @@
             </svg>
           </div>
           <div class="ml-3">
-            <h3 class="text-sm font-medium text-red-800">Completa el formulario para iniciar sesión</h3>
+            <h3 class="text-sm font-medium text-red-800">Completa el formulario por favor.</h3>
           </div>
         </div>
       </div>
@@ -55,7 +72,7 @@
         <div
           class="pointer-events-none absolute inset-0 z-10 rounded-md ring-1 ring-inset ring-gray-300"
         ></div>
-        <fieldset :disabled="isSubmitting">
+        <fieldset :disabled="isSubmitting && !sended">
           <div>
             <label for="email-address" class="sr-only">Correo electrónico</label>
             <div class="relative rounded-md shadow-sm">
@@ -76,26 +93,6 @@
               </div>
             </div>
           </div>
-          <div>
-            <label for="password" class="sr-only">Contraseña</label>
-            <div class="relative rounded-md shadow-sm">
-              <Field
-                id="password"
-                name="password"
-                type="password"
-                autocomplete="current-password"
-                required
-                class="relative block w-full rounded-b-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-100 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
-                placeholder="Contraseña"
-                :validateOnBlur="false" :validateOnChange="false" :validateOnInput="false"
-              />
-              <div v-show="errors.password" class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-                <svg class="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
-                </svg>
-              </div>
-            </div>
-          </div>
         </fieldset>
       </div>
 
@@ -109,24 +106,13 @@
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
-          Iniciar sesión
+          Enviar datos
         </button>
+        <RouterLink to="/login" class="mt-2 flex w-full items-center justify-center rounded-md bg-zinc-400 px-3 py-2 text-sm font-semibold leading-6 text-white hover:bg-zinc-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400 transition ease-in-out duration-150">
+          Regresar al inicio
+        </RouterLink>
       </div>
     </Form>
-
-    <div class="text-sm text-center font-semibold mt-5 text-gray-600">
-      <RouterLink to="/recover" class="">
-        Olvidé mi contraseña
-      </RouterLink>
-    </div>
-
-    <hr class="my-2">
-
-    <div class="text-sm text-center font-semibold text-gray-600">
-      ¿No tienes una cuenta? 
-      <RouterLink to="/signup" class="text-blue-600">
-        Regístrate
-      </RouterLink>
-    </div>
   </div>
+
 </template>

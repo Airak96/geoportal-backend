@@ -163,7 +163,7 @@
             </div>
           </div>
           <div>
-            <label for="institution" class="sr-only">País</label>
+            <label for="institution" class="sr-only">Institución</label>
             <div class="relative rounded-md shadow-sm">
               <Field
                 id="institution"

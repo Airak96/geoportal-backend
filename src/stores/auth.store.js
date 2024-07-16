@@ -41,6 +41,9 @@ export const useAuthStore = defineStore({
       this.user = null;
       localStorage.removeItem('user');
       router.push('/login');
+    },
+    recoverPassword(data) {
+      return fetchWrapper.post(`${baseUrl}/restore-password`, data);
     }
   }
 });
